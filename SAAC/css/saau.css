@@ -1,0 +1,18 @@
+.saau-padding { padding: 8px 16px !important; }
+.saau-margin { margin: 16px !important; }
+.saau-margin-left { margin-left: 16px !important; }
+.saau-margin-right { margin-right: 16px !important; }
+.saau-margin-bottom { margin-bottom: 16px !important; }
+.saau-margin-top { margin-top: 16px !important; }
+.saau-circle { border-radius: 50%; }
+.saau-round-xlarge { border-radius: 16px; }
+.saau-pale-blue { background-color: #ddffff; }
+.saau-blue { background: #2196F3 !important; color: #fff; }
+.saau-green { background: #4CAF50 !important; color: #fff; }
+.saau-white { color: #000 !important; background-color: #fff !important; }
+.saau-text-white { color: #fff !important; }
+.saau-center { text-align: center !important; }
+.saau-left { float: left !important; }
+.saau-right { float: right !important; }
+.saau-padding-16 { padding-top: 16px !important; padding-bottom: 16px !important; }
+.table td, .table th { vertical-align: middle; text-align: center; }

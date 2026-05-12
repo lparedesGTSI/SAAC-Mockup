@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAAC - Sistema de Administración de Asistencia CENAGAS</title>
+    <link rel="shortcut icon" href="SAAC/img/ilogosaau.png" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+    <link rel="stylesheet" href="SAAC/css/saau.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,700');
+        * { text-align: justify; font-family: Montserrat; }
+        body { background: #F8F9F9; }
+        .loader { position: fixed; left: 0; top: 0; width: 100%; height: 100%; z-index: 9999; background: url('SAAC/img/iloader.gif') 50% 50% no-repeat rgb(249,249,249); opacity: .8; }
+        header { width: 100%; height: 80px; background: url('SAAC/img/ifondocenagas.jpg'); background-size: cover; }
+        .content { width: 94%; margin: 1em auto; font-size: 20px; line-height: 30px; }
+        .logo { line-height: 60px; position: fixed; float: left; margin: 16px 46px; color: #fff; font-weight: bold; font-size: 20px; letter-spacing: 2px; }
+        nav { position: fixed; width: 100%; line-height: 60px; z-index: 1030; }
+        nav ul { line-height: 60px; list-style: none; background: rgba(0,0,0,0); overflow: hidden; color: #000; padding: 0; text-align: right; margin: 0; padding-right: 40px; transition: 1s; }
+        nav.black ul { background: #fff; }
+        nav ul li { display: inline-block; padding: 10px; }
+        nav ul li a { text-decoration: none; color: #000; font-size: 16px; cursor: pointer; }
+        nav ul li a:hover { color: #007bff; }
+        .menu-icon { line-height: 60px; width: 100%; background: #fff; text-align: right; box-sizing: border-box; padding: 15px 24px; cursor: pointer; color: #000; display: none; }
+        @media(min-width:787px){
+            nav ul { overflow: visible; white-space: nowrap; }
+        }
+        @media(max-width:786px){
+            .logo { position: fixed; top: 0; margin-top: 16px; }
+            nav ul { max-height: 0; background: #fff; }
+            nav.black ul { background: #fff; }
+            .showing { max-height: 34em; }
+            nav ul li { box-sizing: border-box; width: 100%; padding: 24px; text-align: center; }
+            .menu-icon { display: block; }
+        }
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+        .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .status-presente { background: #d4edda; color: #155724; }
+        .status-ausente { background: #f8d7da; color: #721c24; }
+        .status-ho { background: #cce5ff; color: #004085; }
+        .status-vacaciones { background: #fff3cd; color: #856404; }
+        .status-incapacidad { background: #e2d5f1; color: #563d7c; }
+        .status-permiso { background: #fde2c8; color: #8a4b08; }
+        .status-comision { background: #d1ecf1; color: #0c5460; }
+        .demo-card { transition: transform .2s; cursor: default; }
+        .demo-card:hover { transform: translateY(-5px); }
+        .btn-circle { width: 30px; height: 30px; text-align: center; padding: 6px 0; font-size: 12px; line-height: 1.428571429; border-radius: 15px; }
+        .stepwizard-row { display: table-row; }
+        .stepwizard { display: table; width: 100%; position: relative; }
+        .stepwizard-step button[disabled] { opacity: 1 !important; }
+        .stepwizard-row:before { top: 14px; bottom: 0; position: absolute; content: " "; width: 100%; height: 1px; background-color: #000; z-index: 0; }
+        .stepwizard-step { display: table-cell; text-align: center; position: relative; }
+        .header-spacer { height: 90px; }
+        .saau-blue { background: #2196F3 !important; color: #fff; }
+        .saau-green { background: #4CAF50 !important; color: #fff; }
+        .card-header.saau-blue h3, .card-header.saau-green h4 { color: #fff; }
+        .switch-indicator { width: 16px; height: 16px; display: inline-block; border-radius: 50%; }
+        .bg-warning-light { background: #fff3cd; }
+        .bg-danger-light { background: #f8d7da; }
+
+        .row-detalle p { margin-bottom: 2px; }
+        .foto-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 50%; border: 2px solid #dee2e6; }
+    </style>
+</head>
+<body>
+<div class="loader" id="dloader"></div>
+
+<div class="wrapper">
+    <header>
+        <nav class="fixed-top" id="mainNav">
+            <div class="menu-icon"><i class="fa fa-bars fa-2x"></i></div>
+            <div class="logo"><img src="SAAC/img/ilogohorizontal.png" style="height:50px;" alt="SAAC" /></div>
+            <div class="menu">
+                <ul>
+                    <li><a onclick="showPage('inicio')">Inicio</a></li>
+                    <li><a onclick="showPage('asistencia')">Asistencia</a></li>
+                    <li><a onclick="showPage('dashboard')">Dashboard</a></li>
+                    <li><a onclick="showPage('reportes')">Reportes</a></li>
+                    <li><a onclick="showPage('incidencias')">Incidencias</a></li>
+                    <li><a href="SAAC/Guia/GUIA_SAAC.pdf" target="_blank">Guía</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <div class="header-spacer"></div>
+
+    <div class="content">
+
+        <!-- ================================================================ -->
+        <!-- INICIO (Home) -->
+        <!-- ================================================================ -->
+        <div id="page-inicio" class="page-section">
+            <div class="jumbotron" style="background: linear-gradient(135deg, #1a5276, #2e86c1); color:#fff;">
+                <h1 class="display-4">SAAC</h1>
+                <p class="lead">Sistema de Administración de Asistencia de Colaboradores de CENAGAS</p>
+                <p>Plataforma integral para el registro y control de asistencia, home office, incidencias y reportes.</p>
+                <a class="btn btn-light btn-lg" onclick="showPage('asistencia')" role="button"><i class="fa fa-hand-o-right"></i> Ir a Asistencia</a>
+                <a class="btn btn-outline-light btn-lg" onclick="showPage('dashboard')" role="button"><i class="fa fa-dashboard"></i> Ver Dashboard</a>
+                <a class="btn btn-outline-light btn-lg" onclick="showPage('reportes')" role="button"><i class="fa fa-file-text-o"></i> Ver Reportes</a>
+                <a class="btn btn-outline-light btn-lg" onclick="showPage('incidencias')" role="button"><i class="fa fa-exclamation-triangle"></i> Ver Incidencias</a>
+            </div>
+            <div class="row">
+                <div class="col-md-4"><div class="card mb-3"><div class="card-body text-center"><i class="fa fa-clock-o fa-3x text-primary"></i><h4>Registro</h4><p>Registra tu entrada y salida con foto y geolocalización desde cualquier dispositivo.</p></div></div></div>
+                <div class="col-md-4"><div class="card mb-3"><div class="card-body text-center"><i class="fa fa-home fa-3x text-success"></i><h4>Home Office</h4><p>Calendarización y control de días de trabajo remoto para colaboradores.</p></div></div></div>
+                <div class="col-md-4"><div class="card mb-3"><div class="card-body text-center"><i class="fa fa-bar-chart fa-3x text-warning"></i><h4>Reportes</h4><p>Genera reportes detallados de asistencia, incidencias y productividad.</p></div></div></div>
+            </div>
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- USUARIO / PERFIL (Usuario/Index) - 3-Step Wizard -->
+        <!-- ================================================================ -->
+        <div id="page-usuario" class="page-section">
+            <h2>Formulario de Asistencia</h2>
+            <div class="card saau-padding">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div class="stepwizard">
+                        <div class="stepwizard-row setup-panel">
+                            <div class="stepwizard-step"><button id="btnstep1" type="button" class="btn btn-primary btn-circle" disabled>1</button><p class="text-center small">Datos Generales</p></div>
+                            <div class="stepwizard-step"><button id="btnstep2" type="button" class="btn btn-outline-primary btn-circle" disabled>2</button><p class="text-center small">Asistencia</p></div>
+                            <div class="stepwizard-step"><button id="btnstep3" type="button" class="btn btn-outline-primary btn-circle" disabled>3</button><p class="text-center small">Resumen</p></div>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Datos Generales -->
+                    <div id="dstep1" class="text-center" style="display:block;">
+                        <h3>Datos generales</h3>
+                        <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12 text-center d-inline-block">
+                            <div class="custom-control custom-switch text-right mb-2">
+                                <input type="checkbox" class="custom-control-input" id="switchLaboral">
+                                <label class="custom-control-label" for="switchLaboral">Registro a tercero</label>
+                            </div>
+                            <img src="SAAC/img/iempleados.png" class="saau-circle img-thumbnail" style="width:200px;height:200px;" />
+                            <h3 class="text-center">227</h3>
+                            <p class="text-left"><strong>Nombre:</strong> Juan Carlos Pérez López</p>
+                            <p class="text-left"><strong>Área:</strong> UTOI</p>
+                            <p class="text-left"><strong>Puesto:</strong> Analista de Sistemas</p>
+                            <p class="text-left"><strong>Ubicación:</strong> Oficinas Centrales</p>
+                            <p class="text-left"><strong>Residencia:</strong> CDMX</p>
+                            <p class="text-left"><strong>Área de Adscripción:</strong> DEIT - UTOI</p>
+                            <p class="text-left"><strong>Superior Directo:</strong> Ing. María García Hernández</p>
+                            <p class="text-left"><strong>Dirección:</strong> Dirección Ejecutiva de Infraestructura Tecnológica</p>
+                            <p><span class="status-badge status-presente">Sin registro previo hoy</span></p>
+                        </div><br />
+                        <button class="btn btn-outline-success btn-sm pull-right" type="button" onclick="demoWizardStep(2);">Siguiente <i class="fa fa-arrow-right"></i></button>
+                        <button class="btn btn-outline-warning btn-sm pull-right saau-margin-right" type="button" onclick="$('#dcambioempleado').modal('show');"><i class="fa fa-users"></i> Registro a tercero</button>
+                    </div>
+
+                    <!-- Step 2: Asistencia -->
+                    <div id="dstep2" class="text-center" style="display:none;">
+                        <h3>Asistencia</h3>
+                        <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12 text-left d-inline-block">
+                            <h4>¿Cuál es tu estatus laboral actualmente?</h4>
+                            <div class="form-check"><input type="radio" class="saau-margin-right" name="estatusLaboral" value="Comisión" onchange="demoEstatusChange('Comisión');"/> <label>Comisión</label></div>
+                            <div class="form-check"><input type="radio" class="saau-margin-right" name="estatusLaboral" value="Incapacidad" onchange="demoEstatusChange('Incapacidad');"/> <label>Incapacidad</label></div>
+                            <div class="form-check"><input type="radio" class="saau-margin-right" name="estatusLaboral" value="Permiso" onchange="demoEstatusChange('Permiso');"/> <label>Permiso</label></div>
+                            <div class="form-check"><input type="radio" class="saau-margin-right" name="estatusLaboral" value="Vacaciones" onchange="demoEstatusChange('Vacaciones');"/> <label>Vacaciones</label></div>
+                            <div class="form-check"><input type="radio" class="saau-margin-right" name="estatusLaboral" value="Ninguno" checked onchange="demoEstatusChange('Ninguno');"/> <label>Ubicación</label></div>
+
+                            <div id="delEstatusInfo" class="saau-margin-left mt-2 p-3 saau-pale-blue saau-round-xlarge">
+                                <p class="mb-0 text-center"><i class="fa fa-building"></i> Ubicación actual: Oficinas Centrales</p>
+                            </div>
+
+                            <div id="delComision" style="display:none;" class="mt-2">
+                                <h5>Región</h5>
+                                <select class="form-control"><option>Centro</option><option>Noreste</option><option>Noroeste</option><option>Sur</option></select>
+                                <h5 class="saau-margin-top">Entidad</h5>
+                                <select class="form-control"><option>CDMX</option><option>Nuevo León</option><option>Jalisco</option><option>Veracruz</option></select>
+                            </div>
+
+                            <div id="delFechas" style="display:none;" class="mt-2">
+                                <div class="form-row">
+                                    <div class="form-group col-xl-6"><h5>Fecha inicial</h5><input type="text" class="form-control" value="12/05/2026"/></div>
+                                    <div class="form-group col-xl-6"><h5>Fecha final</h5><input type="text" class="form-control" value="14/05/2026"/></div>
+                                </div>
+                            </div>
+
+                            <div id="delArchivos" style="display:none;" class="mt-2">
+                                <h5>Adjuntar Evidencia</h5>
+                                <input type="file" class="form-control" accept=".pdf,.rar,.zip,.z-zip"/>
+                            </div>
+
+                            <div class="form-group saau-margin-top">
+                                <h5>Comentarios</h5>
+                                <textarea class="form-control" placeholder="Comentarios..." rows="3"></textarea>
+                            </div>
+                        </div><br />
+                        <button class="btn btn-outline-success btn-sm pull-right" type="button" onclick="demoWizardStep(3);">Siguiente <i class="fa fa-arrow-right"></i></button>
+                        <button class="btn btn-outline-primary btn-sm pull-right saau-margin-right" type="button" onclick="demoWizardStep(1);"><i class="fa fa-arrow-left"></i> Anterior</button>
+                    </div>
+
+                    <!-- Step 3: Resumen -->
+                    <div id="dstep3" class="text-center" style="display:none;">
+                        <h3>Resumen</h3>
+                        <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12 text-left d-inline-block">
+                            <h4>Favor de validar que los datos sean correctos</h4>
+                            <div class="card"><div class="card-body">
+                                <p><strong>Empleado:</strong> 227 - Juan Carlos Pérez López</p>
+                                <p><strong>Estatus Laboral:</strong> <span id="resumenEstatus">Ubicación (Oficinas Centrales)</span></p>
+                                <p><strong>Fecha Inicio:</strong> 12/05/2026</p>
+                                <p><strong>Fecha Fin:</strong> 14/05/2026</p>
+                                <p><strong>Comentarios:</strong> ---</p>
+                            </div></div>
+                        </div><br />
+                        <button class="btn btn-success btn-sm pull-right" type="button" onclick="demoAlert('Guardar Asistencia','Registro de asistencia guardado correctamente','success')">Guardar <i class="fa fa-check"></i></button>
+                        <button class="btn btn-outline-primary btn-sm pull-right saau-margin-right" type="button" onclick="demoWizardStep(2);"><i class="fa fa-arrow-left"></i> Anterior</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- ASISTENCIA (Usuario) -->
+        <!-- ================================================================ -->
+        <div id="page-asistencia" class="page-section">
+            <div class="container">
+                <div class="main-body">
+                    <div class="row"><div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-white">
+                                <h1 class="text-center">Registro de Asistencia</h1>
+                                <button type="button" class="btn btn-outline-primary btn-sm" style="position:absolute;top:20px;right:160px;font-size:16pt;" onclick="window.open('SAAC/Guia/DOC_CAM-UBI.pdf', '_blank')" title="Guía para activar ubicación y cámara"><i class="fa fa-question"></i></button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" style="position:absolute;top:20px;right:110px;font-size:16pt;" onclick="$('#modalCatalogo').modal('show');" title="Catálogo de Incidencias"><i class="fa fa-book"></i></button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" style="position:absolute;top:20px;right:60px;font-size:16pt;" onclick="$('#modalAccion').modal('show');" title="Registrar Incapacidad, Comisión o Incidencias"><i class="fa fa-list"></i></button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" style="position:absolute;top:20px;right:10px;font-size:16pt;" onclick="$('#dmmaincidencias').modal('show');" title="Consultar Incidencias"><i class="fa fa-warning"></i></button>
+                            </div>
+                            <div class="card-body bg-light">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <button type="button" class="btn" style="position:absolute;" onclick="demoCambiarUsuario();"><i class="fa fa-user-circle-o text-primary" style="font-size:34pt;"></i></button>
+                                                <div class="d-flex flex-column align-items-center text-center">
+                                                    <img src="SAAC/img/iempleados.png" alt="Foto" class="rounded-circle" width="250" height="250" style="object-fit:contain;">
+                                                    <div class="mt-3">
+                                                        <h4 class="text-center">Juan Carlos Pérez López</h4>
+                                                        <p class="text-secondary mb-1 text-center">Analista de Sistemas</p>
+                                                        <div class="alert alert-success text-center">Registrado - Entrada: 08:45 am</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="card"><div class="card-body">
+                                            <div class="row"><div class="col-4"><h5 class="mb-0">No. Empleado</h5></div><div class="col-8 text-secondary"><label>227</label></div></div><hr>
+                                            <div class="row"><div class="col-4"><h5 class="mb-0">Área</h5></div><div class="col-8 text-secondary"><label>UTOI</label></div></div><hr>
+                                            <div class="row"><div class="col-4"><h5 class="mb-0">Dirección</h5></div><div class="col-8 text-secondary"><label>DIRECCIÓN EJECUTIVA DE INFRAESTRUCTURA TECNOLÓGICA</label></div></div><hr>
+                                            <div class="row"><div class="col-4"><h5 class="mb-0">Área de Adscripción</h5></div><div class="col-8 text-secondary"><label>DEIT - UTOI</label></div></div><hr>
+                                            <div class="row"><div class="col-4"><h5 class="mb-0">Superior Directo</h5></div><div class="col-8 text-secondary"><label>Ing. María García Hernández</label></div></div><hr>
+                                            <div class="row"><div class="col-4"><h5 class="mb-0">Ubicación</h5></div><div class="col-8 text-secondary"><select class="form-control"><option>Oficinas Centrales</option><option>Oficinas Regionales</option><option>Home Office</option></select></div></div><hr>
+                                            <div class="row"><div class="col-4"><h5 class="mb-0">Residencia</h5></div><div class="col-8 text-secondary"><select class="form-control"><option>Ninguna</option><option>CDMX</option><option>Estado de México</option></select></div></div><hr>
+                                            <div class="row"><div class="col-sm-12 text-center">
+                                                <button type="button" class="btn btn-success w-50" style="position:relative;left:25%;" onclick="demoRegistrarEntrada();">Registrar Entrada</button>
+                                                <button type="button" class="btn btn-primary w-50" style="position:relative;left:25%;" onclick="demoRegistrarSalida();">Registrar Salida</button>
+                                            </div></div>
+                                        </div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- DASHBOARD (Admon) -->
+        <!-- ================================================================ -->
+        <div id="page-dashboard" class="page-section">
+            <h2>Sistema de Administración de Asistencia CENAGAS</h2>
+            <div class="row">
+                <div class="card saau-padding saau-margin" style="width:100%;">
+                    <div class="card-deck saau-padding">
+                        <div class="card"><div class="card-body"><h5 class="card-title">Validación CGPP</h5><p><span class="status-badge status-presente">8 pendientes</span></p></div></div>
+                        <div class="card"><div class="card-body"><h5 class="card-title">Validación DEIT</h5><p><span class="status-badge status-presente">5 pendientes</span></p></div></div>
+                        <div class="card"><div class="card-body"><h5 class="card-title">Validación DETO</h5><p><span class="status-badge status-presente">3 pendientes</span></p></div></div>
+                        <div class="card"><div class="card-body"><h5 class="card-title">Validación DEPDO</h5><p><span class="status-badge status-presente">2 pendientes</span></p></div></div>
+                        <div class="card"><div class="card-body"><h5 class="card-title">Validación DERF</h5><p><span class="status-badge status-presente">4 pendientes</span></p></div></div>
+                        <div class="col-xl-1" style="display:flex;align-items:center;"><button class="btn btn-outline-success btn-sm btn-block" onclick="demoAlert('Validación exitosa','Registros validados correctamente','success')">Validar</button></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="form-group">
+                    <label class="saau-margin-left">Filtrar resultados por:</label>
+                    <div class="btn-group saau-margin-left">
+                        <button class="btn btn-outline-success btn-sm" onclick="demoAlert('Filtro','CENAGAS','info')">CENAGAS</button>
+                        <button class="btn btn-outline-info btn-sm" onclick="demoAlert('Filtro','DG','info')">DG</button>
+                        <button class="btn btn-outline-info btn-sm" onclick="demoAlert('Filtro','CGPP','info')">CGPP</button>
+                        <button class="btn btn-outline-info btn-sm" onclick="demoAlert('Filtro','UTOI','info')">UTOI</button>
+                        <button class="btn btn-outline-warning btn-sm" onclick="demoAlert('Filtro','DEIT','info')">DEIT</button>
+                        <button class="btn btn-outline-warning btn-sm" onclick="demoAlert('Filtro','DETO','info')">DETO</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 saau-padding">
+                    <div class="card demo-card" style="height:100%;">
+                        <div class="card-body text-center" style="padding-bottom:0px;">
+                            <img src="SAAC/img/iempleados.png" class="saau-circle img-thumbnail" style="width:150px;height:150px;object-fit:contain;" />
+                            <p class="text-center" style="margin-bottom:0px;">Total de colaboradores</p>
+                            <h2 class="text-center" style="margin-bottom:0px;color:#2196F3;">245</h2>
+                        </div>
+                        <div class="card-footer bg-white text-center"><button class="btn btn-block btn-outline-info btn-sm" onclick="$('#modalDetalleColaboradores').modal('show');"><i class="fa fa-hand-o-right"></i> Detalles</button></div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 saau-padding">
+                    <div class="card demo-card" style="height:100%;">
+                        <div class="card-body text-center" style="padding-bottom:0px;">
+                            <img src="SAAC/img/ioficinascentrales.jpg" class="saau-circle img-thumbnail" style="width:150px;height:150px;object-fit:contain;" />
+                            <p class="text-center" style="margin-bottom:0px;">Oficinas Centrales</p><h2 class="text-center" style="margin-bottom:0px;color:#4CAF50;">142</h2>
+                        </div>
+                        <div class="card-footer bg-white text-center"><button class="btn btn-block btn-outline-info btn-sm" onclick="$('#modalDetalleColaboradores').modal('show');"><i class="fa fa-hand-o-right"></i> Detalles</button></div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 saau-padding">
+                    <div class="card demo-card" style="height:100%;">
+                        <div class="card-body text-center" style="padding-bottom:0px;">
+                            <img src="SAAC/img/iregionales.jpg" class="saau-circle img-thumbnail" style="width:150px;height:150px;object-fit:contain;" />
+                            <p class="text-center" style="margin-bottom:0px;">Oficinas Regionales</p><h2 class="text-center" style="margin-bottom:0px;color:#FF9800;">38</h2>
+                        </div>
+                        <div class="card-footer bg-white text-center"><button class="btn btn-block btn-outline-info btn-sm" onclick="$('#modalDetalleColaboradores').modal('show');"><i class="fa fa-hand-o-right"></i> Detalles</button></div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 saau-padding">
+                    <div class="card demo-card" style="height:100%;">
+                        <div class="card-body text-center" style="padding-bottom:0px;">
+                            <img src="SAAC/img/ihomeoffice.jpg" class="saau-circle img-thumbnail" style="width:150px;height:150px;object-fit:contain;" />
+                            <p class="text-center" style="margin-bottom:0px;">Home Office</p><h2 class="text-center" style="margin-bottom:0px;color:#007bff;">22</h2>
+                        </div>
+                        <div class="card-footer bg-white text-center"><button class="btn btn-block btn-outline-info btn-sm" onclick="$('#modalDetalleColaboradores').modal('show');"><i class="fa fa-hand-o-right"></i> Detalles</button></div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 saau-padding">
+                    <div class="card demo-card" style="height:100%;">
+                        <div class="card-body text-center" style="padding-bottom:0px;">
+                            <img src="SAAC/img/ivacaciones.jpg" class="saau-circle img-thumbnail" style="width:150px;height:150px;object-fit:contain;" />
+                            <p class="text-center" style="margin-bottom:0px;">Vacaciones</p><h2 class="text-center" style="margin-bottom:0px;color:#ffc107;">12</h2>
+                        </div>
+                        <div class="card-footer bg-white text-center"><button class="btn btn-block btn-outline-info btn-sm" onclick="$('#modalDetalleColaboradores').modal('show');"><i class="fa fa-hand-o-right"></i> Detalles</button></div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 saau-padding">
+                    <div class="card demo-card" style="height:100%;">
+                        <div class="card-body text-center" style="padding-bottom:0px;">
+                            <img src="SAAC/img/icolaboradorpresente.png" class="saau-circle img-thumbnail" style="width:150px;height:150px;object-fit:contain;" />
+                            <p class="text-center" style="margin-bottom:0px;">Disponibles</p><h2 class="text-center" style="margin-bottom:0px;color:#4CAF50;">178</h2>
+                        </div>
+                        <div class="card-footer bg-white text-center"><button class="btn btn-block btn-outline-info btn-sm" onclick="$('#modalDetalleColaboradores').modal('show');"><i class="fa fa-hand-o-right"></i> Detalles</button></div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 saau-padding">
+                    <div class="card demo-card" style="height:100%;">
+                        <div class="card-body text-center" style="padding-bottom:0px;">
+                            <img src="SAAC/img/iausente.png" class="saau-circle img-thumbnail" style="width:150px;height:150px;object-fit:contain;" />
+                            <p class="text-center" style="margin-bottom:0px;">Ausentes</p><h2 class="text-center" style="margin-bottom:0px;color:#f44336;">12</h2>
+                        </div>
+                        <div class="card-footer bg-white text-center"><button class="btn btn-block btn-outline-info btn-sm" onclick="$('#modalDetalleColaboradores').modal('show');"><i class="fa fa-hand-o-right"></i> Detalles</button></div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 saau-padding">
+                    <div class="card demo-card" style="height:100%;">
+                        <div class="card-body text-center" style="padding-bottom:0px;">
+                            <img src="SAAC/img/ijustificacion.png" class="saau-circle img-thumbnail" style="width:150px;height:150px;object-fit:contain;" />
+                            <p class="text-center" style="margin-bottom:0px;">Justificaciones</p><h2 class="text-center" style="margin-bottom:0px;color:#6f42c1;">6</h2>
+                        </div>
+                        <div class="card-footer bg-white text-center"><button class="btn btn-block btn-outline-info btn-sm" onclick="$('#modalDetalleColaboradores').modal('show');"><i class="fa fa-hand-o-right"></i> Detalles</button></div>
+                    </div>
+                </div>
+            </div>
+            <hr class="rounded" style="border:5px solid gray;" />
+            <div class="row">
+                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 saau-padding">
+                    <div class="card demo-card" style="height:100%;">
+                        <div class="card-body text-center" style="padding-bottom:0px;">
+                            <img src="SAAC/img/iincapacidad.jpg" class="saau-circle img-thumbnail" style="width:150px;height:150px;object-fit:contain;" />
+                            <p class="text-center" style="margin-bottom:0px;">Incapacidad</p><h2 class="text-center" style="margin-bottom:0px;color:#9c27b0;">5</h2>
+                        </div>
+                        <div class="card-footer bg-white text-center"><button class="btn btn-block btn-outline-info btn-sm" onclick="$('#modalDetalleColaboradores').modal('show');"><i class="fa fa-hand-o-right"></i> Detalles</button></div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 saau-padding">
+                    <div class="card demo-card" style="height:100%;">
+                        <div class="card-body text-center" style="padding-bottom:0px;">
+                            <img src="SAAC/img/ipermiso.jpg" class="saau-circle img-thumbnail" style="width:150px;height:150px;object-fit:contain;" />
+                            <p class="text-center" style="margin-bottom:0px;">Permiso</p><h2 class="text-center" style="margin-bottom:0px;color:#ff9800;">4</h2>
+                        </div>
+                        <div class="card-footer bg-white text-center"><button class="btn btn-block btn-outline-info btn-sm" onclick="$('#modalDetalleColaboradores').modal('show');"><i class="fa fa-hand-o-right"></i> Detalles</button></div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 saau-padding">
+                    <div class="card demo-card" style="height:100%;">
+                        <div class="card-body text-center" style="padding-bottom:0px;">
+                            <img src="SAAC/img/icomision.png" class="saau-circle img-thumbnail" style="width:150px;height:150px;object-fit:contain;" />
+                            <p class="text-center" style="margin-bottom:0px;">Comisión</p><h2 class="text-center" style="margin-bottom:0px;color:#17a2b8;">7</h2>
+                        </div>
+                        <div class="card-footer bg-white text-center"><button class="btn btn-block btn-outline-info btn-sm" onclick="$('#modalDetalleColaboradores').modal('show');"><i class="fa fa-hand-o-right"></i> Detalles</button></div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 saau-padding">
+                    <div class="card demo-card" style="height:100%;">
+                        <div class="card-body text-center" style="padding-bottom:0px;">
+                            <img src="SAAC/img/ierror.png" class="saau-circle img-thumbnail" style="width:150px;height:150px;object-fit:contain;" />
+                            <p class="text-center" style="margin-bottom:0px;">Sin Registro</p><h2 class="text-center" style="margin-bottom:0px;color:#f44336;">8</h2>
+                        </div>
+                        <div class="card-footer bg-white text-center"><button class="btn btn-block btn-outline-info btn-sm" onclick="$('#modalDetalleColaboradores').modal('show');"><i class="fa fa-hand-o-right"></i> Detalles</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- HOME OFFICE (Admon) -->
+        <!-- ================================================================ -->
+        <div id="page-homeoffice" class="page-section">
+            <h2>Sistema de Administración de Asistencia CENAGAS</h2>
+            <div class="row">
+                <div class="card saau-padding saau-margin" style="width:100%;">
+                    <div class="card-body text-center">
+                        <h4>Home Office Empleados</h4>
+                        <div class="table-responsive">
+                            <table id="tdHO" class="table table-hover table-sm text-center">
+                                <thead>
+                                    <tr>
+                                        <th>No. Empleado</th><th>Nombre</th><th>Dirección</th>
+                                        <th><span>12/05</span><br/>Lun</th><th><span>13/05</span><br/>Mar</th><th><span>14/05</span><br/>Mié</th><th><span>15/05</span><br/>Jue</th><th><span>16/05</span><br/>Vie</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>227</td><td>Juan Carlos Pérez López</td><td>DEIT</td><td><i class="fa fa-building fa-2x text-secondary"></i></td><td><i class="fa fa-home fa-2x text-success"></i></td><td><i class="fa fa-building fa-2x text-secondary"></i></td><td><i class="fa fa-home fa-2x text-success"></i></td><td><i class="fa fa-building fa-2x text-secondary"></i></td><td><button class="btn btn-outline-info btn-sm" onclick="$('#modalHO').modal('show');$('#hHOTitulo').text('Calendarización - Juan Carlos Pérez López');"><i class="fa fa-calendar"></i> Calendarizar</button></td></tr>
+                                    <tr><td>312</td><td>María García Hernández</td><td>DG</td><td><i class="fa fa-home fa-2x text-success"></i></td><td><i class="fa fa-building fa-2x text-secondary"></i></td><td><i class="fa fa-home fa-2x text-success"></i></td><td><i class="fa fa-building fa-2x text-secondary"></i></td><td><i class="fa fa-home fa-2x text-success"></i></td><td><button class="btn btn-outline-info btn-sm" onclick="$('#modalHO').modal('show');$('#hHOTitulo').text('Calendarización - María García Hernández');"><i class="fa fa-calendar"></i> Calendarizar</button></td></tr>
+                                    <tr><td>156</td><td>Carlos Mendoza Silva</td><td>UAF</td><td><i class="fa fa-building fa-2x text-secondary"></i></td><td><i class="fa fa-building fa-2x text-secondary"></i></td><td><i class="fa fa-home fa-2x text-success"></i></td><td><i class="fa fa-home fa-2x text-success"></i></td><td><i class="fa fa-building fa-2x text-secondary"></i></td><td><button class="btn btn-outline-info btn-sm" onclick="$('#modalHO').modal('show');$('#hHOTitulo').text('Calendarización - Carlos Mendoza Silva');"><i class="fa fa-calendar"></i> Calendarizar</button></td></tr>
+                                    <tr><td>489</td><td>Ana Patricia Ruiz Torres</td><td>UGTP</td><td><i class="fa fa-home fa-2x text-success"></i></td><td><i class="fa fa-home fa-2x text-success"></i></td><td><i class="fa fa-building fa-2x text-secondary"></i></td><td><i class="fa fa-building fa-2x text-secondary"></i></td><td><i class="fa fa-home fa-2x text-success"></i></td><td><button class="btn btn-outline-info btn-sm" onclick="$('#modalHO').modal('show');$('#hHOTitulo').text('Calendarización - Ana Patricia Ruiz Torres');"><i class="fa fa-calendar"></i> Calendarizar</button></td></tr>
+                                    <tr><td>523</td><td>Roberto Hernández Díaz</td><td>UTA</td><td><i class="fa fa-building fa-2x text-secondary"></i></td><td><i class="fa fa-home fa-2x text-success"></i></td><td><i class="fa fa-building fa-2x text-secondary"></i></td><td><i class="fa fa-building fa-2x text-secondary"></i></td><td><i class="fa fa-home fa-2x text-success"></i></td><td><button class="btn btn-outline-info btn-sm" onclick="$('#modalHO').modal('show');$('#hHOTitulo').text('Calendarización - Roberto Hernández Díaz');"><i class="fa fa-calendar"></i> Calendarizar</button></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- REPORTE GENERAL (Admon/ReporteGeneral) -->
+        <!-- ================================================================ -->
+        <div id="page-reportegral" class="page-section">
+            <h2>Sistema de Administración de Asistencia CENAGAS</h2>
+            <div class="row">
+                <div class="card saau-padding saau-margin" style="width:100%;">
+                    <div class="card-deck saau-padding">
+                        <div class="card"><div class="card-body"><h5 class="card-title">Fecha Inicio</h5><input type="text" class="form-control" value="01/05/2026" /></div></div>
+                        <div class="card"><div class="card-body"><h5 class="card-title">Fecha Fin</h5><input type="text" class="form-control" value="12/05/2026" /></div></div>
+                        <div class="col-xl-1" style="display:flex;align-items:center;"><button class="btn btn-outline-success btn-sm btn-block" onclick="demoAlert('Búsqueda','Buscando reporte...','info')">Buscar</button></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="card saau-padding saau-margin" style="width:100%;">
+                    <h4 style="text-align:center;">Filtros</h4>
+                    <div class="card-deck saau-padding">
+                        <div class="card"><div class="card-body"><h5>No. Empleado</h5><input type="text" class="form-control" placeholder="Buscar..."/></div></div>
+                        <div class="card"><div class="card-body"><h5>Empleado</h5><input type="text" class="form-control" placeholder="Buscar..."/></div></div>
+                    </div>
+                    <div class="card-deck saau-padding">
+                        <div class="card"><div class="card-body"><h5>Dirección Ejecutiva</h5><select class="form-control"><option value="">Todo</option><option>DEIT</option><option>DETO</option><option>DG</option><option>UAF</option></select></div></div>
+                        <div class="card"><div class="card-body"><h5>Situación Laboral</h5><select class="form-control"><option value="">Todo</option><option>Base</option><option>Confianza</option><option>Eventual</option></select></div></div>
+                    </div>
+                    <div class="card-deck saau-padding" style="width:52%;">
+                        <div class="card w-100"><div class="card-body"><h5>Unidad</h5><select class="form-control"><option value="">Todo</option><option>CGPP</option><option>DEIT</option><option>DETO</option><option>DEPDO</option></select></div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="card saau-padding saau-margin" style="width:100%;">
+                    <div class="card-body text-center">
+                        <h4>Reporte General</h4>
+                        <div class="row mb-3">
+                            <div class="col-md-6"><div class="btn-group">
+                                <button class="btn btn-secondary btn-sm" onclick="demoAlert('Copiar','Copiando al portapapeles','info')"><i class="fa fa-copy"></i> Copiar</button>
+                                <button class="btn btn-success btn-sm" onclick="demoAlert('Excel','Exportando a Excel','info')"><i class="fa fa-file-excel-o"></i> Exportar a Excel</button>
+                            </div></div>
+                            <div class="col-md-6"><div class="form-inline float-right"><label>Buscar: <input class="form-control form-control-sm ml-2" placeholder="Buscar"/></label></div></div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped">
+                                <thead><tr><th>No. Empleado</th><th>Nombre</th><th>Dirección</th><th>Unidad</th><th>Situación Laboral</th><th>Fecha Registro</th></tr></thead>
+                                <tbody>
+                                    <tr><td>227</td><td>Juan Carlos Pérez López</td><td>DEIT</td><td>UTOI</td><td><span class="status-badge status-presente">Base</span></td><td>12/05/2026</td></tr>
+                                    <tr><td>312</td><td>María García Hernández</td><td>DG</td><td>CGPP</td><td><span class="status-badge status-presente">Confianza</span></td><td>12/05/2026</td></tr>
+                                    <tr><td>156</td><td>Carlos Mendoza Silva</td><td>UAF</td><td>DEPDO</td><td><span class="status-badge status-ho">Base</span></td><td>12/05/2026</td></tr>
+                                    <tr><td>489</td><td>Ana Patricia Ruiz Torres</td><td>UGTP</td><td>DEGC</td><td><span class="status-badge status-vacaciones">Confianza</span></td><td>11/05/2026</td></tr>
+                                    <tr><td>523</td><td>Roberto Hernández Díaz</td><td>UTA</td><td>DECPTCR</td><td><span class="status-badge status-incapacidad">Base</span></td><td>10/05/2026</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- REPORTE GENERAL v2 (Admon/ReporteGeneral2) - Switch filters + detailed table -->
+        <!-- ================================================================ -->
+        <div id="page-reportegral2" class="page-section">
+            <div class="row saau-margin-bottom">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header saau-blue"><h3><i class="fa fa-filter text-white"></i> Filtros</h3></div>
+                        <div class="card-body">
+                            <div class="row saau-margin-bottom">
+                                <div class="col-12 text-center">
+                                    <div class="form-check form-check-inline">
+                                        <div class="custom-control custom-switch saau-margin-right">
+                                            <input type="checkbox" class="custom-control-input" id="v2fecha" checked><label class="custom-control-label text-dark h4" for="v2fecha">Fecha</label>
+                                        </div>
+                                        <div class="custom-control custom-switch saau-margin-right">
+                                            <input type="checkbox" class="custom-control-input" id="v2emp"><label class="custom-control-label text-dark h4" for="v2emp">Empleado</label>
+                                        </div>
+                                        <div class="custom-control custom-switch saau-margin-right">
+                                            <input type="checkbox" class="custom-control-input" id="v2dir"><label class="custom-control-label text-dark h4" for="v2dir">Dirección</label>
+                                        </div>
+                                        <div class="custom-control custom-switch saau-margin-right">
+                                            <input type="checkbox" class="custom-control-input" id="v2uni"><label class="custom-control-label text-dark h4" for="v2uni">Unidad</label>
+                                        </div>
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input" id="v2sit" checked><label class="custom-control-label text-dark h4" for="v2sit">Situación</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row saau-margin-bottom">
+                                <div class="col-4"><div class="form-row"><div class="form-group col-6"><label>Fecha Inicio</label><input type="text" class="form-control" value="01/05/2026"/></div><div class="form-group col-6"><label>Fecha Fin</label><input type="text" class="form-control" value="12/05/2026"/></div></div></div>
+                                <div class="col-3"><div class="form-group"><label>Dirección</label><select class="form-control" multiple style="height:70px;"><option selected>DEIT</option><option>DETO</option><option>DG</option></select></div></div>
+                                <div class="col-3"><div class="form-group"><label>Situación Laboral</label><select class="form-control" multiple style="height:70px;"><option selected>Base</option><option>Confianza</option></select></div></div>
+                            </div>
+                            <div class="row"><div class="col-12"><button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="demoAlert('Filtrar','Filtrando solicitudes...','info')">Filtrar Solicitudes</button></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header saau-green"><h4>Registros</h4></div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-sm" style="font-size:10pt;">
+                                    <thead class="text-uppercase">
+                                        <tr class="text-center">
+                                            <th>No. Empleado</th><th>Nombre</th><th>Puesto</th><th>Dirección</th><th>Unidad</th><th>Situación</th>
+                                            <th>Fecha</th><th>Hora Entrada</th><th>Dispositivo Entrada</th><th>Hora Salida</th><th>Dispositivo Salida</th><th>Asistencia</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>227</td><td>Juan Carlos Pérez López</td><td>Analista de Sistemas</td><td>DEIT</td><td>UTOI</td><td>Base</td><td>12/05/2026</td><td>08:45 am</td><td><i class="fa fa-desktop text-success"></i> PC</td><td>06:12 pm</td><td><i class="fa fa-desktop text-success"></i> PC</td><td><span class="status-badge status-presente">Presente</span></td></tr>
+                                        <tr><td>312</td><td>María García Hernández</td><td>Directora de Área</td><td>DG</td><td>CGPP</td><td>Confianza</td><td>12/05/2026</td><td>09:10 am</td><td><i class="fa fa-mobile text-success"></i> Móvil</td><td>05:45 pm</td><td><i class="fa fa-mobile text-success"></i> Móvil</td><td><span class="status-badge status-presente">Presente</span></td></tr>
+                                        <tr><td>156</td><td>Carlos Mendoza Silva</td><td>Analista Admvo.</td><td>UAF</td><td>DEPDO</td><td>Base</td><td>12/05/2026</td><td>08:30 am</td><td><i class="fa fa-home text-info"></i> HO</td><td>06:30 pm</td><td><i class="fa fa-home text-info"></i> HO</td><td><span class="status-badge status-ho">Home Office</span></td></tr>
+                                        <tr><td>489</td><td>Ana Patricia Ruiz Torres</td><td>Coordinadora</td><td>UGTP</td><td>DEGC</td><td>Confianza</td><td>12/05/2026</td><td>---</td><td>---</td><td>---</td><td>---</td><td><span class="status-badge status-vacaciones">Vacaciones</span></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- REPORTES (Admon/Reportes) - The most detailed table with photos -->
+        <!-- ================================================================ -->
+        <div id="page-reportes" class="page-section">
+            <div class="row saau-margin-bottom">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header saau-blue"><h3><i class="fa fa-filter text-white"></i> Filtros</h3></div>
+                        <div class="card-body">
+                            <div class="row saau-margin-bottom">
+                                <div class="col-12 text-center">
+                                    <div class="form-check form-check-inline">
+                                        <div class="custom-control custom-switch saau-margin-right"><input type="checkbox" class="custom-control-input" id="rptfecha" checked onchange="demoFilterToggle('rptfecha','rptDivFecha')"><label class="custom-control-label text-dark h4" for="rptfecha">Fecha</label></div>
+                                        <div class="custom-control custom-switch saau-margin-right"><input type="checkbox" class="custom-control-input" id="rptemp" onchange="demoFilterToggle('rptemp','rptDivEmp')"><label class="custom-control-label text-dark h4" for="rptemp">Empleado</label></div>
+                                        <div class="custom-control custom-switch saau-margin-right"><input type="checkbox" class="custom-control-input" id="rptdir" onchange="demoFilterToggle('rptdir','rptDivDir')"><label class="custom-control-label text-dark h4" for="rptdir">Dirección</label></div>
+                                        <div class="custom-control custom-switch saau-margin-right"><input type="checkbox" class="custom-control-input" id="rptuni" onchange="demoFilterToggle('rptuni','rptDivUni')"><label class="custom-control-label text-dark h4" for="rptuni">Unidad</label></div>
+                                        <div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" id="rptsit" onchange="demoFilterToggle('rptsit','rptDivSit')"><label class="custom-control-label text-dark h4" for="rptsit">Situación</label></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row saau-margin-bottom">
+                                <div id="rptDivFecha" class="col-4">
+                                    <div class="form-row"><div class="form-group col-6"><label>Fecha Inicio</label><input type="text" class="form-control" value="01/05/2026"/></div><div class="form-group col-6"><label>Fecha Fin</label><input type="text" class="form-control" value="12/05/2026"/></div></div>
+                                </div>
+                                <div id="rptDivEmp" class="col-4" style="display:none;">
+                                    <div class="form-group"><label>Empleado</label><select class="form-control" multiple style="height:70px;"><option selected>227 - Juan Pérez</option><option selected>312 - María García</option><option>156 - Carlos Mendoza</option><option>489 - Ana Ruiz</option></select></div>
+                                </div>
+                                <div id="rptDivDir" class="col-4" style="display:none;">
+                                    <div class="form-group"><label>Dirección</label><select class="form-control" multiple style="height:70px;"><option selected>DEIT</option><option selected>DETO</option><option>DG</option><option>UAF</option><option>UGTP</option></select></div>
+                                </div>
+                                <div id="rptDivUni" class="col-4" style="display:none;">
+                                    <div class="form-group"><label>Unidad</label><select class="form-control" multiple style="height:70px;"><option selected>UTOI</option><option>CGPP</option><option>DEPDO</option><option>DEGC</option></select></div>
+                                </div>
+                                <div id="rptDivSit" class="col-4" style="display:none;">
+                                    <div class="form-group"><label>Situación Laboral</label><select class="form-control" multiple style="height:70px;"><option selected>Base</option><option selected>Confianza</option><option>Eventual</option></select></div>
+                                </div>
+                            </div>
+                            <div class="row"><div class="col-12"><button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="demoAlert('Filtrar','Filtrando solicitudes...','info')">Filtrar Solicitudes</button></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header saau-green"><h4>Registros</h4></div>
+                        <div class="card-body">
+                            <p class="text-muted small">* Tabla completa: datos del empleado, dispositivos, ubicación, fotos, tiempos y justificaciones</p>
+                            <div class="table-responsive" style="overflow-x:auto;">
+                                <table class="table table-hover table-sm" style="font-size:8.5pt;min-width:1800px;">
+                                    <thead class="text-uppercase" style="font-size:7.5pt;">
+                                        <tr class="text-center">
+                                            <th>No.</th><th>Nombre</th><th>Puesto</th><th>Dirección</th><th>Unidad</th><th>Situación</th>
+                                            <th>Fecha</th><th>Hora Ent.</th><th>Dis. Ent.</th><th>Ubic. Ent.</th><th>Foto Ent.</th>
+                                            <th>Hora Sal.</th><th>Dis. Sal.</th><th>Ubic. Sal.</th><th>Foto Sal.</th>
+                                            <th>T. Laborado</th><th>Asistencia</th><th>Justificación</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>227</td><td>Juan Pérez López</td><td>Analista de Sistemas</td><td>DEIT</td><td>UTOI</td><td>Base</td><td>12/05/2026</td><td>08:45</td><td><i class="fa fa-desktop text-success"></i></td><td><a href="#" onclick="return demoAlert('Mapa','Ver ubicación en Google Maps','info')"><i class="fa fa-map-marker"></i></a></td>
+                                            <td><img src="SAAC/img/iempleados.png" class="foto-thumb" style="width:35px;height:35px;" /></td>
+                                            <td>18:12</td><td><i class="fa fa-desktop text-success"></i></td><td><a href="#" onclick="return demoAlert('Mapa','Ver ubicación','info')"><i class="fa fa-map-marker"></i></a></td>
+                                            <td><img src="SAAC/img/iempleados.png" class="foto-thumb" style="width:35px;height:35px;" /></td>
+                                            <td>08:45 hrs</td><td><span class="status-badge status-presente">Presente</span></td>
+                                            <td><button class="btn btn-outline-info btn-xs py-0" onclick="demoValidarJustificacion('Juan Pérez López','227','12/05/2026','Problema técnico con el equipo de cómputo')">Justificar</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>312</td><td>María García Hernández</td><td>Directora de Área</td><td>DG</td><td>CGPP</td><td>Confianza</td><td>12/05/2026</td><td>09:10</td><td><i class="fa fa-mobile text-success"></i></td><td><a href="#" onclick="return demoAlert('Mapa','Ver ubicación','info')"><i class="fa fa-map-marker"></i></a></td>
+                                            <td><img src="SAAC/img/iempleados.png" class="foto-thumb" style="width:35px;height:35px;" /></td>
+                                            <td>17:45</td><td><i class="fa fa-mobile text-success"></i></td><td><a href="#" onclick="return demoAlert('Mapa','Ver ubicación','info')"><i class="fa fa-map-marker"></i></a></td>
+                                            <td><img src="SAAC/img/iempleados.png" class="foto-thumb" style="width:35px;height:35px;" /></td>
+                                            <td>08:35 hrs</td><td><span class="status-badge status-presente">Presente</span></td>
+                                            <td><button class="btn btn-outline-info btn-xs py-0" onclick="demoValidarJustificacion('María García Hernández','312','12/05/2026','Omisión de registro de salida por reunión con proveedores')">Justificar</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>156</td><td>Carlos Mendoza Silva</td><td>Analista Administrativo</td><td>UAF</td><td>DEPDO</td><td>Base</td><td>12/05/2026</td><td>08:30</td><td><i class="fa fa-home text-info"></i></td><td><a href="#" onclick="return demoAlert('Mapa','Home Office','info')"><i class="fa fa-home"></i></a></td>
+                                            <td><img src="SAAC/img/iempleados.png" class="foto-thumb" style="width:35px;height:35px;" /></td>
+                                            <td>18:30</td><td><i class="fa fa-home text-info"></i></td><td><a href="#" onclick="return demoAlert('Mapa','Home Office','info')"><i class="fa fa-home"></i></a></td>
+                                            <td><img src="SAAC/img/iempleados.png" class="foto-thumb" style="width:35px;height:35px;" /></td>
+                                            <td>09:00 hrs</td><td><span class="status-badge status-ho">Home Office</span></td>
+                                            <td><span class="text-muted">---</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>489</td><td>Ana Patricia Ruiz Torres</td><td>Coordinadora de Gestión</td><td>UGTP</td><td>DEGC</td><td>Confianza</td><td>12/05/2026</td><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td><td><span class="status-badge status-vacaciones">Vacaciones</span></td>
+                                            <td><span class="text-muted">---</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>523</td><td>Roberto Hernández Díaz</td><td>Jefe de Departamento</td><td>UTA</td><td>DECPTCR</td><td>Base</td><td>12/05/2026</td><td>07:55</td><td><i class="fa fa-desktop text-success"></i></td><td><a href="#" onclick="return demoAlert('Mapa','Ver ubicación','info')"><i class="fa fa-map-marker"></i></a></td>
+                                            <td><img src="SAAC/img/iempleados.png" class="foto-thumb" style="width:35px;height:35px;" /></td>
+                                            <td>16:30</td><td><i class="fa fa-desktop text-success"></i></td><td><a href="#" onclick="return demoAlert('Mapa','Ver ubicación','info')"><i class="fa fa-map-marker"></i></a></td>
+                                            <td><img src="SAAC/img/iempleados.png" class="foto-thumb" style="width:35px;height:35px;" /></td>
+                                            <td>08:35 hrs</td><td><span class="status-badge status-presente">Presente</span></td>
+                                            <td><button class="btn btn-outline-info btn-xs py-0" onclick="demoValidarJustificacion('Roberto Hernández Díaz','523','12/05/2026','Retardo por cita médica programada, se adjunta comprobante')">Justificar</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>678</td><td>Laura Jiménez Ortiz</td><td>Analista Jurídico</td><td>UAJ</td><td>DEDV</td><td>Confianza</td><td>12/05/2026</td><td>09:30</td><td><i class="fa fa-mobile text-success"></i></td><td><a href="#" onclick="return demoAlert('Mapa','Ver ubicación','info')"><i class="fa fa-map-marker"></i></a></td>
+                                            <td><img src="SAAC/img/iempleados.png" class="foto-thumb" style="width:35px;height:35px;" /></td>
+                                            <td>---</td><td>---</td><td>---</td><td>---</td>
+                                            <td>---</td><td><span class="status-badge status-ausente">Sin registro salida</span></td>
+                                            <td><button class="btn btn-outline-info btn-xs py-0" onclick="demoValidarJustificacion('Laura Jiménez Ortiz','678','12/05/2026','Olvidó registrar salida, se encuentra laborando')">Justificar</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- ASISTENCIAS (Admon/Asistencias) -->
+        <!-- ================================================================ -->
+        <div id="page-asistencias" class="page-section">
+            <h2>Sistema de Administración de Asistencia CENAGAS</h2>
+            <div class="row">
+                <div class="card saau-padding saau-margin" style="width:100%;">
+                    <div class="card-body text-center">
+                        <h3>Asistencias de los empleados</h3>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-sm text-center">
+                                <thead>
+                                    <tr>
+                                        <th>No. Empleado</th><th>Nombre</th><th>Área</th><th>Situación</th><th>Fecha</th>
+                                        <th>Hora Entrada</th><th>Ubicación Entrada</th><th>Hora Salida</th><th>Ubicación Salida</th><th>Estatus</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>227</td><td>Juan Carlos Pérez López</td><td>UTOI</td><td>Base</td><td>12/05/2026</td><td>08:45 am</td><td><a href="#" onclick="return demoAlert('Mapa','Ver ubicación','info')"><i class="fa fa-map-marker"></i> Ver ubicación</a></td><td>06:12 pm</td><td><a href="#" onclick="return demoAlert('Mapa','Ver ubicación','info')"><i class="fa fa-map-marker"></i> Ver ubicación</a></td><td><span class="status-badge status-presente">Presente</span></td></tr>
+                                    <tr><td>312</td><td>María García Hernández</td><td>DG</td><td>Confianza</td><td>12/05/2026</td><td>09:10 am</td><td><a href="#" onclick="return demoAlert('Mapa','Ver ubicación','info')"><i class="fa fa-map-marker"></i> Ver ubicación</a></td><td>05:45 pm</td><td><a href="#" onclick="return demoAlert('Mapa','Ver ubicación','info')"><i class="fa fa-map-marker"></i> Ver ubicación</a></td><td><span class="status-badge status-presente">Presente</span></td></tr>
+                                    <tr><td>156</td><td>Carlos Mendoza Silva</td><td>UAF</td><td>Base</td><td>12/05/2026</td><td>08:30 am</td><td><i class="fa fa-home text-success"></i> Home Office</td><td>06:30 pm</td><td><i class="fa fa-home text-success"></i> Home Office</td><td><span class="status-badge status-ho">Home Office</span></td></tr>
+                                    <tr><td>489</td><td>Ana Patricia Ruiz Torres</td><td>UGTP</td><td>Confianza</td><td>12/05/2026</td><td>---</td><td>---</td><td>---</td><td>---</td><td><span class="status-badge status-vacaciones">Vacaciones</span></td></tr>
+                                    <tr><td>523</td><td>Roberto Hernández Díaz</td><td>UTA</td><td>Base</td><td>12/05/2026</td><td>---</td><td>---</td><td>---</td><td>---</td><td><span class="status-badge status-incapacidad">Incapacidad</span></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- INCIDENCIAS (Admon/Incidencias) -->
+        <!-- ================================================================ -->
+        <div id="page-incidencias" class="page-section">
+            <div class="row saau-margin-bottom">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header saau-blue"><h3><i class="fa fa-filter text-white"></i> Filtros</h3></div>
+                        <div class="card-body">
+                            <div class="row saau-margin-bottom">
+                                <div class="col-12 text-center">
+                                    <div class="form-check form-check-inline">
+                                        <div class="custom-control custom-switch saau-margin-right"><input type="checkbox" class="custom-control-input" id="incfecha" checked onchange="demoFilterToggle('incfecha','incDivFecha')"><label class="custom-control-label text-dark h4" for="incfecha">Fecha</label></div>
+                                        <div class="custom-control custom-switch saau-margin-right"><input type="checkbox" class="custom-control-input" id="incemp" onchange="demoFilterToggle('incemp','incDivEmp')"><label class="custom-control-label text-dark h4" for="incemp">Empleado</label></div>
+                                        <div class="custom-control custom-switch saau-margin-right"><input type="checkbox" class="custom-control-input" id="incdir" onchange="demoFilterToggle('incdir','incDivDir')"><label class="custom-control-label text-dark h4" for="incdir">Dirección</label></div>
+                                        <div class="custom-control custom-switch saau-margin-right"><input type="checkbox" class="custom-control-input" id="incuni" onchange="demoFilterToggle('incuni','incDivUni')"><label class="custom-control-label text-dark h4" for="incuni">Unidad</label></div>
+                                        <div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" id="inctipo" checked onchange="demoFilterToggle('inctipo','incDivTipo')"><label class="custom-control-label text-dark h4" for="inctipo">Tipo Incidencia</label></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row saau-margin-bottom">
+                                <div id="incDivFecha" class="col-4">
+                                    <div class="form-row"><div class="form-group col-6"><label>Fecha Inicio</label><input type="text" class="form-control" value="01/05/2026"/></div><div class="form-group col-6"><label>Fecha Fin</label><input type="text" class="form-control" value="12/05/2026"/></div></div>
+                                </div>
+                                <div id="incDivEmp" class="col-4" style="display:none;">
+                                    <div class="form-group"><label>Empleado</label><select class="form-control" multiple style="height:70px;"><option selected>227 - Juan Pérez</option><option>312 - María García</option><option>156 - Carlos Mendoza</option></select></div>
+                                </div>
+                                <div id="incDivDir" class="col-4" style="display:none;">
+                                    <div class="form-group"><label>Dirección</label><select class="form-control" multiple style="height:70px;"><option selected>DEIT</option><option selected>DG</option><option>UAF</option></select></div>
+                                </div>
+                                <div id="incDivUni" class="col-4" style="display:none;">
+                                    <div class="form-group"><label>Unidad</label><select class="form-control" multiple style="height:70px;"><option selected>UTOI</option><option>CGPP</option><option>DEPDO</option></select></div>
+                                </div>
+                                <div id="incDivTipo" class="col-4">
+                                    <div class="form-group"><label>Tipo Incidencia</label><select class="form-control" multiple style="height:80px;"><option selected>Retardo</option><option selected>Omisión de Entrada</option><option>Omisión de Salida</option><option>Inasistencia</option></select></div>
+                                </div>
+                            </div>
+                            <div class="row"><div class="col-12"><button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="demoAlert('Filtrar','Filtrando solicitudes...','info')">Filtrar Solicitudes</button></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header saau-green"><h4>Registros de Incidencias</h4></div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover" style="table-layout:fixed;">
+                                    <thead class="text-uppercase align-middle" style="font-size:12pt;">
+                                        <tr class="text-center">
+                                            <th style="width:120px;">No. Empleado</th><th style="width:250px;">Nombre</th><th style="width:250px;">Puesto</th><th style="width:280px;">Dirección</th><th style="width:150px;">Unidad</th>
+                                            <th style="width:150px;">Tipo Incidencia</th><th style="width:130px;">Fecha Registro</th><th style="width:120px;">Justificación</th><th style="width:130px;">Estatus</th><th style="width:120px;">Observaciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="font-size:11pt;">
+                                        <tr>
+                                            <td>227</td><td>Juan Carlos Pérez López</td><td>Analista de Sistemas</td><td>DEIT</td><td>UTOI</td>
+                                            <td><span class="status-badge status-vacaciones">Omisión Entrada</span></td><td>12/05/2026 08:50 am</td>
+                                            <td><button class="btn btn-outline-info btn-sm py-0" onclick="demoValidarJustificacion('Juan Carlos Pérez López','227','12/05/2026','Olvidé registrar mi entrada por problema con la red')">Justificar</button></td>
+                                            <td><span class="status-badge status-ausente">Pendiente</span></td><td><i class="fa fa-paperclip"></i> 1 archivo</td>
+                                        </tr>
+                                        <tr>
+                                            <td>312</td><td>María García Hernández</td><td>Directora de Área</td><td>DG</td><td>CGPP</td>
+                                            <td><span class="status-badge status-ausente">Omisión Salida</span></td><td>11/05/2026 05:45 pm</td>
+                                            <td><button class="btn btn-outline-info btn-sm py-0" onclick="demoValidarJustificacion('María García Hernández','312','11/05/2026','Salí a una reunión externa y olvidé registrar la salida')">Justificar</button></td>
+                                            <td><span class="status-badge status-presente">Aprobado</span></td><td>Problema técnico</td>
+                                        </tr>
+                                        <tr>
+                                            <td>156</td><td>Carlos Mendoza Silva</td><td>Analista Administrativo</td><td>UAF</td><td>DEPDO</td>
+                                            <td><span class="status-badge status-permiso">Retardo</span></td><td>10/05/2026 09:30 am</td>
+                                            <td><button class="btn btn-outline-info btn-sm py-0" onclick="demoValidarJustificacion('Carlos Mendoza Silva','156','10/05/2026','Retardo por tráfico intenso en la autopista')">Justificar</button></td>
+                                            <td><span class="status-badge status-comision">En Revisión</span></td><td>Tráfico</td>
+                                        </tr>
+                                        <tr>
+                                            <td>489</td><td>Ana Patricia Ruiz Torres</td><td>Coordinadora de Gestión</td><td>UGTP</td><td>DEGC</td>
+                                            <td><span class="status-badge status-vacaciones">Inasistencia</span></td><td>09/05/2026</td>
+                                            <td><button class="btn btn-outline-info btn-sm py-0" onclick="demoValidarJustificacion('Ana Patricia Ruiz Torres','489','09/05/2026','Inasistencia por cita médica programada con especialista')">Justificar</button></td>
+                                            <td><span class="status-badge status-ausente">Rechazado</span></td><td>Documentación insuficiente</td>
+                                        </tr>
+                                        <tr>
+                                            <td>523</td><td>Roberto Hernández Díaz</td><td>Jefe de Departamento</td><td>UTA</td><td>DECPTCR</td>
+                                            <td><span class="status-badge status-permiso">Omisión Entrada y Salida</span></td><td>08/05/2026</td>
+                                            <td><button class="btn btn-outline-info btn-sm py-0" onclick="demoValidarJustificacion('Roberto Hernández Díaz','523','08/05/2026','Trabajé de forma presencial pero el sistema no registró mi entrada ni salida')">Justificar</button></td>
+                                            <td><span class="status-badge status-incapacidad">Pendiente</span></td><td><i class="fa fa-paperclip"></i> 2 archivos</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- SIN ACCESO (Usuario/NotAccess) -->
+        <!-- ================================================================ -->
+        <div id="page-notaccess" class="page-section" style="display:none;">
+            <div class="container">
+                <div class="main-body">
+                    <div class="row"><div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-white"><h1 class="text-center">Sin acceso a registro de asistencia.</h1></div>
+                            <div class="card-body bg-light">
+                                <div class="row"><div class="col-12">
+                                    <div class="card"><div class="card-body">
+                                        <div class="d-flex flex-column align-items-center text-center">
+                                            <div class="mt-5">
+                                                <div class="alert alert-warning text-center" style="font-size:16pt;">
+                                                    <i class="fa fa-exclamation-triangle fa-3x"></i><br/><br/>
+                                                    No cuenta con acceso al registro de asistencia, toda vez que el personal con nivel Director o superior no requiere llevar a cabo dicha acción.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div></div>
+                                </div></div>
+                            </div>
+                        </div>
+                    </div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- ERROR (Shared/Error) -->
+        <!-- ================================================================ -->
+        <div id="page-error" class="page-section" style="display:none;">
+            <div class="container">
+                <h1 class="text-danger"><i class="fa fa-exclamation-circle"></i> Error.</h1>
+                <h2 class="text-danger">Error al procesar la solicitud.</h2>
+                <p class="text-muted">Ocurrió un error inesperado. Por favor intente de nuevo más tarde o contacte al administrador del sistema.</p>
+                <a class="btn btn-primary" onclick="showPage('inicio')"><i class="fa fa-home"></i> Volver al Inicio</a>
+            </div>
+        </div>
+
+    </div><!-- /.content -->
+</div><!-- /.wrapper -->
+
+<!-- ================================================================ -->
+<!-- MODALES GLOBALES -->
+<!-- ================================================================ -->
+
+<!-- Modal Validación de Justificación (global para Reportes e Incidencias) -->
+<div class="modal fade" id="modalValidacion" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fa fa-check-circle"></i> Validar Justificación</h5>
+                <button type="button" class="close text-white" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3"><h6 class="font-weight-bold">Empleado:</h6><p id="valEmpNombre">---</p></div>
+                <div class="mb-3"><h6 class="font-weight-bold">No. Empleado:</h6><p id="valEmpNumero">---</p></div>
+                <div class="mb-3"><h6 class="font-weight-bold">Fecha:</h6><p id="valFecha">---</p></div>
+                <div class="mb-3"><h6 class="font-weight-bold">Justificación:</h6><p id="valJustificacion">---</p></div>
+                <hr>
+                <div class="form-group"><label class="font-weight-bold">Comentarios:</label><textarea id="valComentarios" class="form-control" rows="3" placeholder="Ingrese comentarios (opcional)"></textarea></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
+                <button type="button" class="btn btn-danger" onclick="demoAlert('Rechazar','Justificación rechazada','error');$('#modalValidacion').modal('hide');"><i class="fa fa-times-circle"></i> Rechazar</button>
+                <button type="button" class="btn btn-success" onclick="demoAlert('Aprobar','Justificación aprobada','success');$('#modalValidacion').modal('hide');"><i class="fa fa-check-circle"></i> Aprobar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Catálogo Incidencias -->
+<div class="modal fade" id="modalCatalogo" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h3 class="modal-title text-white" style="width:100%;text-align:center;">Catálogo de Sanciones en el Término de 15 días</h3>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body text-center">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr><td style="text-align:left;">Sin registro de asistencia</td><td>Se considera falta injustificada sin derecho a goce de sueldo</td></tr>
+                        <tr><td style="text-align:left;">Sin registro de salida</td><td>Se considera abandono de labores y se contabiliza como "Falta"</td></tr>
+                        <tr><td style="text-align:left;">3 retardos</td><td>Amonestación verbal</td></tr>
+                        <tr><td style="text-align:left;">4 retardos</td><td>Amonestación escrita</td></tr>
+                        <tr><td style="text-align:left;">De 5 a 7 retardos</td><td>Suspensión de 1 día sin goce de sueldo</td></tr>
+                        <tr><td style="text-align:left;">8 retardos</td><td>Suspensión de 2 días sin goce de sueldo</td></tr>
+                        <tr><td style="text-align:left;">Más de 8 retardos</td><td>Suspensión de 3 días sin goce de sueldo</td></tr>
+                        <tr><td colspan="2" class="text-center small">Cuando un empleado falte sin causa justificada a sus labores más de 3 veces en un periodo de 30 días... deberá remitir Acta Circunstanciada.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer"><button type="button" class="btn btn-dark" data-dismiss="modal">Cerrar</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Acción (Incapacidad/Comisión/Justificación) -->
+<div class="modal fade" id="modalAccion" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h3 class="modal-title text-white" style="width:100%;text-align:center;">Realizar Acción</h3>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group list-group-light">
+                    <li class="list-group-item">
+                        <div class="fw-bold">Acción</div>
+                        <select class="form-control" id="selAccion" onchange="demoAccionChange(this.value);">
+                            <option value="" selected disabled>Elegir opción...</option>
+                            <option value="1">Incapacidad</option>
+                            <option value="2">Permiso</option>
+                            <option value="3">Comisión</option>
+                            <option value="4">Justificación</option>
+                        </select>
+                    </li>
+                    <li class="list-group-item" id="liComision" style="display:none;">
+                        <div class="row">
+                            <div class="col-5"><div class="fw-bold">Región</div><select class="form-control"><option>Noreste</option><option>Noroeste</option><option>Centro</option><option>Sur</option></select></div>
+                            <div class="col-7"><div class="fw-bold">Entidad</div><select class="form-control"><option>CDMX</option><option>Nuevo León</option><option>Jalisco</option><option>Veracruz</option></select></div>
+                        </div>
+                    </li>
+                    <li class="list-group-item" id="liFechas">
+                        <div class="row">
+                            <div class="col-6"><div class="fw-bold">Fecha Inicio</div><input type="text" class="form-control" value="12/05/2026"/></div>
+                            <div class="col-6"><div class="fw-bold">Fecha Fin</div><input type="text" class="form-control" value="14/05/2026"/></div>
+                        </div>
+                    </li>
+                    <li class="list-group-item" id="liJustificacion" style="display:none;">
+                        <div class="row">
+                            <div class="col-6"><div class="fw-bold">Fecha</div><input type="text" class="form-control" value="12/05/2026"/></div>
+                            <div class="col-6"><div class="fw-bold">Tipo Justificación</div><select class="form-control"><option>Omisión de Entrada</option><option>Omisión de Salida</option><option>Omisión de Entrada y Salida</option><option>Retardo</option><option>Inasistencia</option></select></div>
+                        </div>
+                    </li>
+                    <li class="list-group-item"><div class="fw-bold">Observaciones</div><textarea class="form-control" rows="3"></textarea></li>
+                    <li class="list-group-item"><div class="fw-bold">Adjuntar Evidencia</div><input type="file" class="form-control" accept=".pdf,.rar,.zip" /></li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="demoAlert('Guardar','Acción guardada correctamente','success')">Guardar Acción</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Detalle Colaboradores (Dashboard) -->
+<div class="modal fade" id="modalDetalleColaboradores" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="padding-top:5px;padding-bottom:5px;">
+                <h4 class="modal-title" style="width:100%;text-align:center;">Detalle de Colaboradores</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body" style="padding-top:5px;padding-bottom:5px;">
+                <div class="row mb-2">
+                    <div class="col-12">
+                        <button class="btn btn-warning text-white btn-sm" onclick="$('#modalDetalleColaboradores').modal('hide');setTimeout(function(){$('#dmmdaincapacidad').modal('show');},400);">Agregar Incapacidad</button>
+                        <button class="btn btn-danger text-white btn-sm" onclick="$('#modalDetalleColaboradores').modal('hide');setTimeout(function(){$('#dmmdapermiso').modal('show');},400);">Agregar Permiso</button>
+                        <button class="btn btn-primary text-white btn-sm" onclick="$('#modalDetalleColaboradores').modal('hide');setTimeout(function(){$('#dmmdacomision').modal('show');},400);">Agregar Comisión</button>
+                        <button class="btn btn-info text-white btn-sm" onclick="$('#modalDetalleColaboradores').modal('hide');setTimeout(function(){$('#dmmdajustificacion').modal('show');},400);">Agregar Justificación</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm">
+                        <thead><tr><th>No. Empleado</th><th>Nombre</th><th>Dirección</th><th>Estatus</th><th>Acción</th></tr></thead>
+                        <tbody>
+                            <tr><td>227</td><td>Juan Carlos Pérez López</td><td>DEIT</td><td><span class="status-badge status-presente">Presente</span></td><td><button class="btn btn-outline-info btn-sm" onclick="$('#modalDetalleColaboradores').modal('hide');setTimeout(function(){$('#ddetalleempleado').modal('show');},400);"><i class="fa fa-eye"></i></button></td></tr>
+                            <tr><td>312</td><td>María García Hernández</td><td>DG</td><td><span class="status-badge status-presente">Presente</span></td><td><button class="btn btn-outline-info btn-sm" onclick="$('#modalDetalleColaboradores').modal('hide');setTimeout(function(){$('#ddetalleempleado').modal('show');},400);"><i class="fa fa-eye"></i></button></td></tr>
+                            <tr><td>156</td><td>Carlos Mendoza Silva</td><td>UAF</td><td><span class="status-badge status-ho">Home Office</span></td><td><button class="btn btn-outline-info btn-sm" onclick="$('#modalDetalleColaboradores').modal('hide');setTimeout(function(){$('#ddetalleempleado').modal('show');},400);"><i class="fa fa-eye"></i></button></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer"><button type="button" class="btn btn-outline-success btn-sm" data-dismiss="modal">Cerrar ventana</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Home Office Calendar -->
+<div class="modal fade" id="modalHO" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="padding-top:5px;padding-bottom:5px;">
+                <h4 id="hHOTitulo" class="modal-title" style="width:100%;text-align:center;">Calendarización</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body text-center">
+                <p class="text-muted">Haga clic en un día para alternar Home Office <i class="fa fa-home text-success"></i> / Oficina <i class="fa fa-building text-secondary"></i></p>
+                <div class="card"><div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-4 text-left"><button class="btn btn-outline-secondary btn-sm" onclick="demoAlert('Mes anterior','Navegando al mes anterior','info')"><i class="fa fa-chevron-left"></i></button></div>
+                        <div class="col-4"><h5>Mayo 2026</h5></div>
+                        <div class="col-4 text-right"><button class="btn btn-outline-secondary btn-sm" onclick="demoAlert('Mes siguiente','Navegando al mes siguiente','info')"><i class="fa fa-chevron-right"></i></button></div>
+                    </div>
+                    <table class="table table-bordered">
+                        <thead><tr><th>Dom</th><th>Lun</th><th>Mar</th><th>Mié</th><th>Jue</th><th>Vie</th><th>Sáb</th></tr></thead>
+                        <tbody>
+                            <tr><td class="text-muted">27</td><td class="text-muted">28</td><td class="text-muted">29</td><td class="text-muted">30</td><td>1</td><td>2</td><td>3</td></tr>
+                            <tr><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td></tr>
+                            <tr>
+                                <td>11</td>
+                                <td class="bg-success text-white" style="cursor:pointer;" onclick="demoAlert('HO','Alternando Home Office','info')">12 <i class="fa fa-home"></i></td>
+                                <td style="cursor:pointer;" onclick="demoAlert('HO','Alternando Home Office','info')">13</td>
+                                <td class="bg-success text-white" style="cursor:pointer;" onclick="demoAlert('HO','Alternando Home Office','info')">14 <i class="fa fa-home"></i></td>
+                                <td style="cursor:pointer;" onclick="demoAlert('HO','Alternando Home Office','info')">15</td>
+                                <td class="bg-success text-white" style="cursor:pointer;" onclick="demoAlert('HO','Alternando Home Office','info')">16 <i class="fa fa-home"></i></td>
+                                <td>17</td>
+                            </tr>
+                            <tr><td>18</td><td>19</td><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td></tr>
+                            <tr><td>25</td><td>26</td><td>27</td><td>28</td><td>29</td><td>30</td><td>31</td></tr>
+                        </tbody>
+                    </table>
+                </div></div>
+            </div>
+            <div class="modal-footer"><button type="button" class="btn btn-outline-success btn-sm" data-dismiss="modal">Cerrar</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Detalle Empleado (Dashboard) -->
+<div class="modal fade" id="ddetalleempleado" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="padding-top:5px;padding-bottom:5px;">
+                <h4 class="modal-title" style="width:100%;text-align:center;">Datos del Empleado</h4>
+                <button type="button" class="close" onclick="$('#ddetalleempleado').modal('hide');setTimeout(function(){$('#modalDetalleColaboradores').modal('show');},400);"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body text-center" style="padding-top:5px;padding-bottom:5px;">
+                <img src="SAAC/img/iempleados.png" class="saau-circle img-thumbnail" style="width:125px;height:125px;" />
+                <h4 class="text-center mt-2" id="hdenombre">Juan Carlos Pérez López</h4>
+                <p class="text-left mb-0"><strong>No. Empleado:</strong> 227</p>
+                <p class="text-left mb-0"><strong>Puesto:</strong> Analista de Sistemas</p>
+                <p class="text-left mb-0"><strong>Dirección:</strong> Dirección Ejecutiva de Infraestructura Tecnológica</p>
+                <p class="text-left mb-0"><strong>Área de Adscripción:</strong> DEIT - UTOI</p>
+                <p class="text-left mb-0"><strong>Ubicación:</strong> Oficinas Centrales</p>
+                <p class="text-left mb-0"><strong>Superior Directo:</strong> Ing. María García Hernández</p>
+                <p class="text-left mb-0"><strong>Estatus Laboral:</strong> <span class="status-badge status-presente">Base</span></p>
+                <p class="text-left mb-0" style="display:none;"><strong>Región:</strong> Centro</p>
+                <p class="text-left mb-0" style="display:none;"><strong>Entidad:</strong> CDMX</p>
+                <p class="text-left mb-0" style="display:none;"><strong>Fecha Inicio:</strong> 01/01/2020</p>
+                <p class="text-left mb-0" style="display:none;"><strong>Fecha Fin:</strong> ---</p>
+                <p class="text-left mb-0" style="display:none;"><strong>Comentarios:</strong> ---</p>
+            </div>
+            <div class="modal-footer" style="padding-top:5px;padding-bottom:5px;">
+                <button type="button" class="btn btn-outline-success btn-sm" onclick="$('#ddetalleempleado').modal('hide');setTimeout(function(){$('#modalDetalleColaboradores').modal('show');},400);">Cerrar ventana</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Agregar Incapacidad (Dashboard) -->
+<div class="modal fade" id="dmmdaincapacidad" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h3 class="modal-title text-white" style="width:100%;text-align:center;">Agregar Incapacidad</h3>
+                <button type="button" class="close" onclick="$('#dmmdaincapacidad').modal('hide');setTimeout(function(){$('#modalDetalleColaboradores').modal('show');},400);"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body text-center">
+                <form autocomplete="off">
+                    <ul class="list-group list-group-light">
+                        <li class="list-group-item">
+                            <div class="fw-bold text-left">Empleado</div>
+                            <select class="form-control"><option selected>227 - Juan Carlos Pérez López</option><option>312 - María García Hernández</option><option>156 - Carlos Mendoza Silva</option></select>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-6"><div class="fw-bold text-left">Fecha Inicio</div><input type="text" class="form-control" value="12/05/2026"/></div>
+                                <div class="col-6"><div class="fw-bold text-left">Fecha Fin</div><input type="text" class="form-control" value="14/05/2026"/></div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="fw-bold text-left">Observaciones</div>
+                            <textarea class="form-control" rows="5">Incapacidad por consulta médica general</textarea>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="fw-bold text-left">Adjuntar Evidencia</div>
+                            <input type="file" class="form-control" accept=".pdf,.rar,.zip,.z-zip"/>
+                        </li>
+                    </ul>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark btn-sm" onclick="$('#dmmdaincapacidad').modal('hide');setTimeout(function(){$('#modalDetalleColaboradores').modal('show');},400);">Cerrar</button>
+                <button type="button" class="btn btn-warning text-white" onclick="demoAlert('Guardar Incapacidad','Incapacidad guardada correctamente','success')">Agregar Incapacidad</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Agregar Permiso (Dashboard) -->
+<div class="modal fade" id="dmmdapermiso" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h3 class="modal-title text-white" style="width:100%;text-align:center;">Agregar Permiso</h3>
+                <button type="button" class="close" onclick="$('#dmmdapermiso').modal('hide');setTimeout(function(){$('#modalDetalleColaboradores').modal('show');},400);"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body text-center">
+                <form autocomplete="off">
+                    <ul class="list-group list-group-light">
+                        <li class="list-group-item">
+                            <div class="fw-bold text-left">Empleado</div>
+                            <select class="form-control"><option selected>227 - Juan Carlos Pérez López</option><option>312 - María García Hernández</option><option>156 - Carlos Mendoza Silva</option></select>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-6"><div class="fw-bold text-left">Fecha Inicio</div><input type="text" class="form-control" value="12/05/2026"/></div>
+                                <div class="col-6"><div class="fw-bold text-left">Fecha Fin</div><input type="text" class="form-control" value="12/05/2026"/></div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="fw-bold text-left">Observaciones</div>
+                            <textarea class="form-control" rows="5">Permiso personal por asuntos particulares</textarea>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="fw-bold text-left">Adjuntar Evidencia</div>
+                            <input type="file" class="form-control" accept=".pdf,.rar,.zip,.z-zip"/>
+                        </li>
+                    </ul>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark btn-sm" onclick="$('#dmmdapermiso').modal('hide');setTimeout(function(){$('#modalDetalleColaboradores').modal('show');},400);">Cerrar</button>
+                <button type="button" class="btn btn-danger text-white" onclick="demoAlert('Guardar Permiso','Permiso guardado correctamente','success')">Agregar Permiso</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Agregar Comisión (Dashboard) -->
+<div class="modal fade" id="dmmdacomision" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h3 class="modal-title text-white" style="width:100%;text-align:center;">Agregar Comisión</h3>
+                <button type="button" class="close" onclick="$('#dmmdacomision').modal('hide');setTimeout(function(){$('#modalDetalleColaboradores').modal('show');},400);"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body text-center">
+                <form autocomplete="off">
+                    <ul class="list-group list-group-light">
+                        <li class="list-group-item">
+                            <div class="fw-bold text-left">Empleado</div>
+                            <select class="form-control"><option selected>227 - Juan Carlos Pérez López</option><option>312 - María García Hernández</option><option>156 - Carlos Mendoza Silva</option></select>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-5"><div class="fw-bold text-left">Región</div>
+                                    <select class="form-control"><option>Centro</option><option>Noreste</option><option>Noroeste</option><option>Sur</option></select></div>
+                                <div class="col-7"><div class="fw-bold text-left">Entidad</div>
+                                    <select class="form-control"><option>CDMX</option><option>Nuevo León</option><option>Jalisco</option><option>Veracruz</option></select></div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-6"><div class="fw-bold text-left">Fecha Inicio</div><input type="text" class="form-control" value="12/05/2026"/></div>
+                                <div class="col-6"><div class="fw-bold text-left">Fecha Fin</div><input type="text" class="form-control" value="15/05/2026"/></div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="fw-bold text-left">Observaciones</div>
+                            <textarea class="form-control" rows="5">Comisión para capacitación en nuevas tecnologías</textarea>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="fw-bold text-left">Adjuntar Evidencia</div>
+                            <input type="file" class="form-control" accept=".pdf,.rar,.zip,.z-zip"/>
+                        </li>
+                    </ul>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark btn-sm" onclick="$('#dmmdacomision').modal('hide');setTimeout(function(){$('#modalDetalleColaboradores').modal('show');},400);">Cerrar</button>
+                <button type="button" class="btn btn-primary text-white" onclick="demoAlert('Guardar Comisión','Comisión guardada correctamente','success')">Agregar Comisión</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Agregar Justificación (Dashboard) -->
+<div class="modal fade" id="dmmdajustificacion" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h3 class="modal-title text-white" style="width:100%;text-align:center;">Agregar Justificación</h3>
+                <button type="button" class="close" onclick="$('#dmmdajustificacion').modal('hide');setTimeout(function(){$('#modalDetalleColaboradores').modal('show');},400);"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body text-center">
+                <form autocomplete="off">
+                    <ul class="list-group list-group-light">
+                        <li class="list-group-item">
+                            <div class="fw-bold text-left">Empleado</div>
+                            <select class="form-control"><option selected>227 - Juan Carlos Pérez López</option><option>312 - María García Hernández</option><option>156 - Carlos Mendoza Silva</option></select>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-6"><div class="fw-bold text-left">Fecha</div><input type="text" class="form-control" value="12/05/2026"/></div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="fw-bold text-left">Tipo de Justificación</div>
+                            <select class="form-control">
+                                <option>Omisión de Entrada</option>
+                                <option>Omisión de Salida</option>
+                                <option>Omisión de Entrada y Salida</option>
+                                <option>Retardo</option>
+                                <option selected>Inasistencia</option>
+                            </select>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="fw-bold text-left">Observaciones</div>
+                            <textarea class="form-control" rows="5">Inasistencia por cita médica programada, se adjunta comprobante</textarea>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="fw-bold text-left">Adjuntar Evidencia</div>
+                            <input type="file" class="form-control" accept=".pdf,.rar,.zip,.z-zip"/>
+                        </li>
+                    </ul>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark btn-sm" onclick="$('#dmmdajustificacion').modal('hide');setTimeout(function(){$('#modalDetalleColaboradores').modal('show');},400);">Cerrar</button>
+                <button type="button" class="btn btn-danger text-white" onclick="demoAlert('Guardar Justificación','Justificación guardada correctamente','success')">Agregar Justificación</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Cambio de Empleado (Usuario/Index) -->
+<div class="modal fade" id="dcambioempleado" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="padding-top:5px;padding-bottom:5px;">
+                <h4 class="modal-title" style="width:100%;text-align:center;">Cambio de empleado</h4>
+                <button type="button" class="close" onclick="$('#dcambioempleado').modal('hide');"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body text-center" style="padding-top:5px;padding-bottom:5px;">
+                <h5>Seleccione el empleado tercero</h5>
+                <select class="form-control">
+                    <option>227 - Juan Carlos Pérez López</option>
+                    <option>312 - María García Hernández</option>
+                    <option>156 - Carlos Mendoza Silva</option>
+                    <option>489 - Ana Patricia Ruiz Torres</option>
+                    <option>523 - Roberto Hernández Díaz</option>
+                </select>
+            </div>
+            <div class="modal-footer" style="padding-top:5px;padding-bottom:5px;">
+                <button type="button" class="btn btn-outline-success btn-sm" onclick="demoAlert('Cambio','Empleado cambiado correctamente','success')">Cambiar empleado</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Incidencias (Asistencia) -->
+<div class="modal fade" id="dmmaincidencias" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h3 class="modal-title text-white" style="width:100%;text-align:center;">Incidencias</h3>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body text-center">
+                <form autocomplete="off">
+                    <ul class="list-group list-group-light">
+                        <li class="list-group-item">
+                            <div class="fw-bold text-left">Seleccione periodo</div>
+                            <select class="form-control" id="quincenaSelect">
+                                <option value="actual">Quincena Actual</option>
+                                <option value="anterior">Quincena Anterior</option>
+                            </select>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="table-responsive">
+                                <table id="tblIncidencias" class="table table-hover" style="table-layout:fixed;">
+                                    <thead class="text-uppercase align-middle" style="font-size:11pt;">
+                                        <tr class="text-center">
+                                            <th style="width:100px;">No. Empleado</th>
+                                            <th style="width:220px;">Nombre</th>
+                                            <th style="width:200px;">Puesto</th>
+                                            <th style="width:220px;">Dirección</th>
+                                            <th style="width:130px;">Unidad</th>
+                                            <th style="width:130px;">Tipo Incidencia</th>
+                                            <th style="width:120px;">Fecha Registro</th>
+                                            <th style="width:120px;">Justificación</th>
+                                            <th style="width:110px;">Estatus</th>
+                                            <th style="width:110px;">Observaciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="font-size:10pt;">
+                                        <tr>
+                                            <td>227</td><td>Juan Carlos Pérez López</td><td>Analista de Sistemas</td><td>DEIT</td><td>UTOI</td>
+                                            <td><span class="status-badge status-ausente">Retardo</span></td><td>12/05/2026 08:50 am</td>
+                                            <td>Problema de tránsito</td><td><span class="status-badge status-incapacidad">Pendiente</span></td><td>---</td>
+                                        </tr>
+                                        <tr>
+                                            <td>312</td><td>María García Hernández</td><td>Directora de Área</td><td>DG</td><td>CGPP</td>
+                                            <td><span class="status-badge status-ausente">Omisión Entrada</span></td><td>11/05/2026 09:15 am</td>
+                                            <td><a href="#" onclick="return demoAlert('Documento','Ver documento adjunto','info')">Ver documento</a></td>
+                                            <td><span class="status-badge status-presente">Aprobado</span></td><td>Problema técnico</td>
+                                        </tr>
+                                        <tr>
+                                            <td>156</td><td>Carlos Mendoza Silva</td><td>Analista Admvo.</td><td>UAF</td><td>DEPDO</td>
+                                            <td><span class="status-badge status-permiso">Omisión Salida</span></td><td>10/05/2026 06:30 pm</td>
+                                            <td>Emergencia familiar</td><td><span class="status-badge status-comision">Aprobado</span></td><td>---</td>
+                                        </tr>
+                                        <tr>
+                                            <td>489</td><td>Ana Patricia Ruiz Torres</td><td>Coordinadora</td><td>UGTP</td><td>DEGC</td>
+                                            <td><span class="status-badge status-vacaciones">Inasistencia</span></td><td>09/05/2026</td>
+                                            <td><a href="#" onclick="return demoAlert('Documento','Ver documento adjunto','info')">Ver documento</a></td>
+                                            <td><span class="status-badge status-ausente">Rechazado</span></td><td>Documentación insuficiente</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </li>
+                    </ul>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+<script>
+$(document).ready(function(){
+    showPage('inicio');
+    $(".menu-icon").on("click", function(){ $("nav ul").toggleClass("showing"); });
+    $(window).on("scroll", function(){ $(window).scrollTop() ? $('nav').addClass('black') : $('nav').removeClass('black'); });
+    // Initialize filter toggles
+    $('.custom-control-input[onchange*="demoFilterToggle"]').each(function(){
+        var parts = $(this).attr('onchange').match(/demoFilterToggle\('([^']+)','([^']+)'\)/);
+        if(parts) demoFilterToggle(parts[1], parts[2]);
+    });
+    setTimeout(function(){ $('#dloader').css('visibility','hidden'); }, 800);
+});
+
+function showPage(pageId){
+    $('.page-section').removeClass('active').hide();
+    var $page = $('#page-' + pageId);
+    $page.addClass('active').show();
+    $('.menu ul').removeClass('showing');
+
+    if(pageId === 'homeoffice' && !$.fn.DataTable.isDataTable('#tdHO')){
+        setTimeout(function(){
+            try {
+                $('#tdHO').DataTable({ ordering: true, language: { url: '//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json' }, pageLength: 5 });
+            } catch(e){}
+        }, 100);
+    }
+
+    $('#dloader').css('visibility','visible');
+    setTimeout(function(){ $('#dloader').css('visibility','hidden'); }, 500);
+}
+
+function demoAlert(title, text, icon){
+    Swal.fire({ icon: icon||'info', title: title, text: text, timer: 2000, showConfirmButton: false });
+    return false;
+}
+
+function demoModal(title, text){
+    Swal.fire({ icon: 'info', title: title, text: text, timer: 2000, showConfirmButton: false });
+}
+
+function demoAccionChange(val){
+    $('#liComision').hide();
+    $('#liJustificacion').hide();
+    if(val === '3') $('#liComision').show();
+    if(val === '4') $('#liJustificacion').show();
+}
+
+function demoFilterToggle(checkboxId, divId){
+    $('#' + divId).toggle($('#' + checkboxId).is(':checked'));
+}
+
+function demoValidarJustificacion(nombre, numEmpleado, fecha, justificacion){
+    $('#valEmpNombre').text(nombre);
+    $('#valEmpNumero').text(numEmpleado);
+    $('#valFecha').text(fecha);
+    $('#valJustificacion').text(justificacion);
+    $('#valComentarios').val('');
+    $('#modalValidacion').modal('show');
+}
+
+function demoCambiarUsuario(){
+    var options = '<select id="swalEmpleados" class="form-control">' +
+        '<option value="">Seleccionar...</option>' +
+        '<option value="227">227 - Juan Carlos Pérez López</option>' +
+        '<option value="312">312 - María García Hernández</option>' +
+        '<option value="156">156 - Carlos Mendoza Silva</option>' +
+        '<option value="489">489 - Ana Patricia Ruiz Torres</option>' +
+        '<option value="523">523 - Roberto Hernández Díaz</option>' +
+        '</select>';
+    Swal.fire({
+        title: 'Cambiar Usuario',
+        html: options,
+        showCancelButton: true,
+        confirmButtonColor: '#1266f1',
+        cancelButtonColor: '#616163',
+        confirmButtonText: 'Cambiar Usuario',
+        cancelButtonText: 'Cerrar',
+        showLoaderOnConfirm: true,
+        preConfirm: function(){
+            var emp = document.getElementById('swalEmpleados').value;
+            if(!emp){ Swal.showValidationMessage('Favor de indicar el empleado'); }
+        },
+        allowOutsideClick: false
+    }).then(function(result){
+        if(result.isConfirmed){
+            demoAlert('Cambiar Usuario', 'Usuario cambiado correctamente', 'success');
+        }
+    });
+}
+
+function demoRegistrarEntrada(){
+    Swal.fire({
+        title: 'Registrar Entrada',
+        text: 'Asegúrese que su imagen se vea claramente en la cámara, ¿desea registrar su entrada?',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#00b74a',
+        cancelButtonColor: '#616163',
+        confirmButtonText: 'Registrar Entrada',
+        cancelButtonText: 'Cancelar'
+    }).then(function(result){
+        if(result.isConfirmed){
+            demoAlert('Registrar Entrada', 'Entrada registrada correctamente a las 08:45 am', 'success');
+        }
+    });
+}
+
+function demoRegistrarSalida(){
+    Swal.fire({
+        title: 'Registrar Salida',
+        text: '¿Se encuentra seguro de registrar su salida?',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#1266f1',
+        cancelButtonColor: '#616163',
+        confirmButtonText: 'Registrar Salida',
+        cancelButtonText: 'Cancelar'
+    }).then(function(result){
+        if(result.isConfirmed){
+            demoAlert('Registrar Salida', 'Salida registrada correctamente a las 06:12 pm', 'success');
+        }
+    });
+}
+
+function demoWizardStep(step){
+    for(var i=1;i<=3;i++){
+        $('#dstep'+i).hide();
+        $('#btnstep'+i).removeClass('btn-primary').addClass('btn-outline-primary');
+    }
+    $('#dstep'+step).show();
+    $('#btnstep'+step).removeClass('btn-outline-primary').addClass('btn-primary');
+}
+
+function demoEstatusChange(value){
+    $('#delComision').hide();
+    $('#delFechas').hide();
+    $('#delArchivos').hide();
+    $('#delEstatusInfo').show();
+    if(value === 'Comisión'){
+        $('#delComision').show();
+        $('#delFechas').show();
+        $('#delArchivos').show();
+        $('#delEstatusInfo').html('<p class="mb-0 text-center"><i class="fa fa-briefcase"></i> Comisión</p>');
+    }else if(value === 'Incapacidad'){
+        $('#delFechas').show();
+        $('#delArchivos').show();
+        $('#delEstatusInfo').html('<p class="mb-0 text-center"><i class="fa fa-medkit"></i> Incapacidad</p>');
+    }else if(value === 'Permiso'){
+        $('#delFechas').show();
+        $('#delArchivos').show();
+        $('#delEstatusInfo').html('<p class="mb-0 text-center"><i class="fa fa-file-text"></i> Permiso</p>');
+    }else if(value === 'Vacaciones'){
+        $('#delFechas').show();
+        $('#delEstatusInfo').html('<p class="mb-0 text-center"><i class="fa fa-sun-o"></i> Vacaciones</p>');
+    }else{
+        $('#delEstatusInfo').html('<p class="mb-0 text-center"><i class="fa fa-building"></i> Ubicación actual: Oficinas Centrales</p>');
+    }
+}
+</script>
+</body>
+</html>

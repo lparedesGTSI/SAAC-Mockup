@@ -1,0 +1,319 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuevo movimiento RH · Asistencia Infonavit</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="topnav">
+  <div class="container">
+    <div class="topnav-brand">
+      <img src="logo.svg" alt="Infonavit">
+      <span>Personal</span>
+    </div>
+    <div class="topnav-modules" id="asistencia-menu">
+      <button type="button" class="topnav-modules-btn" id="asistencia-btn" aria-haspopup="true" aria-expanded="false">
+        Asistencia
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+      </button>
+      <div class="topnav-modules-dropdown" role="menu">
+        <a href="dashboard.html" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Inicio
+        </a>
+        <a href="reports.html" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Mis reportes
+        </a>
+        <a href="admin-reports.html" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Administración
+        </a>
+        <a href="indicators.html" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Indicadores
+        </a>
+      </div>
+    </div>
+    <div class="topnav-modules" id="modules-menu">
+      <button type="button" class="topnav-modules-btn" id="modules-btn" aria-haspopup="true" aria-expanded="false">
+        Vacaciones
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+      </button>
+      <div class="topnav-modules-dropdown" role="menu">
+        <a href="vacations.html" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Solicitudes
+        </a>
+        <a href="vacation-approvals.html" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Aprobaciones
+        </a>
+      </div>
+    </div>
+    <div class="topnav-modules" id="empleados-menu">
+      <button type="button" class="topnav-modules-btn" id="empleados-btn" aria-haspopup="true" aria-expanded="false">
+        Empleados
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+      </button>
+      <div class="topnav-modules-dropdown" role="menu">
+        <a href="employee-list.html" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          Directorio
+        </a>
+      </div>
+    </div>
+    <div class="topnav-modules" id="rh-menu">
+      <button type="button" class="topnav-modules-btn" id="rh-btn" aria-haspopup="true" aria-expanded="false">
+        RH
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+      </button>
+      <div class="topnav-modules-dropdown" role="menu">
+        <a href="hr-movements.html" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Movimientos
+        </a>
+        <a href="hr-new-movement.html" class="active" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nuevo movimiento
+        </a>
+        <a href="incidents.html" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Incidencias
+        </a>
+        <a href="commissions.html" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Comisiones
+        </a>
+      </div>
+    </div>
+    <div class="topnav-user">
+      <div class="avatar" id="user-initials">--</div>
+      <span id="user-name">Empleado</span>
+      <button class="btn-link-logout" id="logout-btn">Cerrar sesión</button>
+    </div>
+  </div>
+</nav>
+
+<div class="page-body">
+  <div class="container" style="max-width:760px;">
+
+    <div class="page-header" style="margin-bottom:var(--spacing-24);">
+      <h1>Nuevo movimiento de RH</h1>
+      <div class="meta">Selecciona el tipo de movimiento y completa los datos</div>
+    </div>
+
+    <!-- Selector de tipo -->
+    <div class="hr-type-grid">
+      <label class="hr-type-card" id="type-alta">
+        <input type="radio" name="hr-type" value="alta">
+        <div class="hr-type-icon" style="background:#e6f4ed;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+        </div>
+        <span class="hr-type-name">Alta</span>
+        <span class="hr-type-desc">Ingreso de nuevo empleado</span>
+      </label>
+      <label class="hr-type-card" id="type-baja">
+        <input type="radio" name="hr-type" value="baja">
+        <div class="hr-type-icon" style="background:#fee2e2;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+        </div>
+        <span class="hr-type-name">Baja</span>
+        <span class="hr-type-desc">Salida o separación del empleado</span>
+      </label>
+      <label class="hr-type-card" id="type-cambio">
+        <input type="radio" name="hr-type" value="cambio">
+        <div class="hr-type-icon" style="background:#dbeafe;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 17l-5-5 5-5"/><path d="M18 17l-5-5 5-5"/></svg>
+        </div>
+        <span class="hr-type-name">Cambio</span>
+        <span class="hr-type-desc">Modificación en área, jefe o contrato</span>
+      </label>
+      <label class="hr-type-card" id="type-promocion">
+        <input type="radio" name="hr-type" value="promocion">
+        <div class="hr-type-icon" style="background:#fef9c3;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#a16207" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        </div>
+        <span class="hr-type-name">Promoción</span>
+        <span class="hr-type-desc">Ascenso o cambio de puesto</span>
+      </label>
+    </div>
+
+    <div class="card" style="padding:var(--spacing-24);" id="form-card">
+      <p style="color:var(--color-steel);font-size:14px;text-align:center;margin:0;" id="form-placeholder">
+        Selecciona un tipo de movimiento para continuar.
+      </p>
+
+      <!-- ALTA -->
+      <div class="hr-form-section" id="section-alta">
+        <div class="hr-form-divider">Datos del nuevo empleado</div>
+        <div class="form-field-row">
+          <div class="form-field">
+            <label for="alta-name">Nombre completo *</label>
+            <input type="text" id="alta-name" placeholder="Ej. Juan Pérez García">
+          </div>
+          <div class="form-field">
+            <label for="alta-email">Correo institucional *</label>
+            <input type="email" id="alta-email" placeholder="juan.perez@infonavit.org.mx">
+          </div>
+        </div>
+        <div class="form-field-row">
+          <div class="form-field">
+            <label for="alta-position">Puesto *</label>
+            <input type="text" id="alta-position" placeholder="Ej. Analista de sistemas">
+          </div>
+          <div class="form-field">
+            <label for="alta-area">Área / Departamento *</label>
+            <input type="text" id="alta-area" placeholder="Ej. Tecnología de la Información">
+          </div>
+        </div>
+        <div class="form-field-row">
+          <div class="form-field">
+            <label for="alta-date">Fecha de ingreso *</label>
+            <input type="date" id="alta-date">
+          </div>
+          <div class="form-field">
+            <label for="alta-contract">Tipo de contrato *</label>
+            <select id="alta-contract">
+              <option value="">Seleccionar…</option>
+              <option value="Base">Base</option>
+              <option value="Confianza">Confianza</option>
+              <option value="Honorarios">Honorarios</option>
+              <option value="Eventual">Eventual</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="alta-notes">Observaciones</label>
+          <textarea id="alta-notes" placeholder="Información adicional…"></textarea>
+        </div>
+      </div>
+
+      <!-- BAJA -->
+      <div class="hr-form-section" id="section-baja">
+        <div class="hr-form-divider">Datos de la baja</div>
+        <div class="form-field">
+          <label for="baja-email">Empleado (correo) *</label>
+          <input type="text" id="baja-email" list="known-emails-list" placeholder="correo@infonavit.org.mx">
+          <datalist id="known-emails-list"></datalist>
+        </div>
+        <div class="form-field-row">
+          <div class="form-field">
+            <label for="baja-date">Fecha efectiva de baja *</label>
+            <input type="date" id="baja-date">
+          </div>
+          <div class="form-field">
+            <label for="baja-type">Tipo de baja *</label>
+            <select id="baja-type">
+              <option value="">Seleccionar…</option>
+              <option value="Voluntaria">Voluntaria</option>
+              <option value="Involuntaria">Involuntaria</option>
+              <option value="Jubilación">Jubilación</option>
+              <option value="Defunción">Defunción</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="baja-reason">Motivo / Observaciones *</label>
+          <textarea id="baja-reason" placeholder="Describir el motivo de la baja…"></textarea>
+        </div>
+      </div>
+
+      <!-- CAMBIO -->
+      <div class="hr-form-section" id="section-cambio">
+        <div class="hr-form-divider">Datos del cambio</div>
+        <div class="form-field">
+          <label for="cambio-email">Empleado (correo) *</label>
+          <input type="text" id="cambio-email" list="known-emails-list" placeholder="correo@infonavit.org.mx">
+        </div>
+        <div class="form-field-row">
+          <div class="form-field">
+            <label for="cambio-date">Fecha efectiva *</label>
+            <input type="date" id="cambio-date">
+          </div>
+          <div class="form-field">
+            <label for="cambio-type">Tipo de cambio *</label>
+            <select id="cambio-type">
+              <option value="">Seleccionar…</option>
+              <option value="Área">Área / Departamento</option>
+              <option value="Jefe directo">Jefe directo</option>
+              <option value="Horario">Horario</option>
+              <option value="Tipo de contrato">Tipo de contrato</option>
+              <option value="Salario">Salario</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-field-row">
+          <div class="form-field">
+            <label for="cambio-prev">Valor anterior *</label>
+            <input type="text" id="cambio-prev" placeholder="Situación actual">
+          </div>
+          <div class="form-field">
+            <label for="cambio-new">Valor nuevo *</label>
+            <input type="text" id="cambio-new" placeholder="Nueva situación">
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="cambio-notes">Observaciones</label>
+          <textarea id="cambio-notes" placeholder="Contexto adicional…"></textarea>
+        </div>
+      </div>
+
+      <!-- PROMOCIÓN -->
+      <div class="hr-form-section" id="section-promocion">
+        <div class="hr-form-divider">Datos de la promoción</div>
+        <div class="form-field">
+          <label for="promo-email">Empleado (correo) *</label>
+          <input type="text" id="promo-email" list="known-emails-list" placeholder="correo@infonavit.org.mx">
+        </div>
+        <div class="form-field-row">
+          <div class="form-field">
+            <label for="promo-prev-position">Puesto anterior *</label>
+            <input type="text" id="promo-prev-position" placeholder="Ej. Analista junior">
+          </div>
+          <div class="form-field">
+            <label for="promo-new-position">Puesto nuevo *</label>
+            <input type="text" id="promo-new-position" placeholder="Ej. Analista senior">
+          </div>
+        </div>
+        <div class="form-field-row">
+          <div class="form-field">
+            <label for="promo-area">Área</label>
+            <input type="text" id="promo-area" placeholder="Ej. Tecnología">
+          </div>
+          <div class="form-field">
+            <label for="promo-date">Fecha efectiva *</label>
+            <input type="date" id="promo-date">
+          </div>
+        </div>
+        <div class="form-field-row">
+          <div class="form-field">
+            <label for="promo-salary">% incremento salarial</label>
+            <input type="number" id="promo-salary" min="0" max="100" step="0.5" placeholder="Ej. 15">
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="promo-notes">Observaciones</label>
+          <textarea id="promo-notes" placeholder="Logros que motivaron la promoción…"></textarea>
+        </div>
+      </div>
+
+      <p id="form-error" style="color:var(--color-infonavit-red);font-size:14px;margin:0 0 16px;display:none;"></p>
+
+      <div id="form-actions" style="display:none;justify-content:flex-end;gap:12px;">
+        <a href="hr-movements.html" class="btn btn-secondary">Cancelar</a>
+        <button type="button" class="btn btn-primary" id="submit-btn">Guardar movimiento</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="app.js"></script>
+<script src="hr-new-movement.js"></script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard · Asistencia Infonavit</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="topnav">
+  <div class="container">
+    <div class="topnav-brand">
+      <img src="logo.svg" alt="Infonavit">
+      <span>Personal</span>
+    </div>
+    <div class="topnav-modules" id="asistencia-menu">
+      <button type="button" class="topnav-modules-btn" id="asistencia-btn" aria-haspopup="true" aria-expanded="false">
+        Asistencia
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+      </button>
+      <div class="topnav-modules-dropdown" role="menu">
+        <a href="dashboard.html" class="active" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Inicio
+        </a>
+        <a href="reports.html" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Mis reportes
+        </a>
+        <a href="admin-reports.html" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Administración
+        </a>
+        <a href="indicators.html" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Indicadores
+        </a>
+      </div>
+    </div>
+    <div class="topnav-modules" id="modules-menu">
+      <button type="button" class="topnav-modules-btn" id="modules-btn" aria-haspopup="true" aria-expanded="false">
+        Vacaciones
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+      </button>
+      <div class="topnav-modules-dropdown" role="menu">
+        <a href="vacations.html" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Solicitudes
+        </a>
+        <a href="vacation-approvals.html" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Aprobaciones
+        </a>
+      </div>
+    </div>
+    <div class="topnav-modules" id="empleados-menu">
+      <button type="button" class="topnav-modules-btn" id="empleados-btn" aria-haspopup="true" aria-expanded="false">
+        Empleados
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+      </button>
+      <div class="topnav-modules-dropdown" role="menu">
+        <a href="employee-list.html" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          Directorio
+        </a>
+      </div>
+    </div>
+    <div class="topnav-modules" id="rh-menu">
+      <button type="button" class="topnav-modules-btn" id="rh-btn" aria-haspopup="true" aria-expanded="false">
+        RH
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+      </button>
+      <div class="topnav-modules-dropdown" role="menu">
+        <a href="hr-movements.html" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Movimientos
+        </a>
+        <a href="hr-new-movement.html" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nuevo movimiento
+        </a>
+        <a href="incidents.html" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Incidencias
+        </a>
+        <a href="commissions.html" role="menuitem">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Comisiones
+        </a>
+      </div>
+    </div>
+    <div class="topnav-user">
+      <div class="avatar" id="user-initials">--</div>
+      <span id="user-name">Empleado</span>
+      <button class="btn-link-logout" id="logout-btn">Cerrar sesión</button>
+    </div>
+  </div>
+</nav>
+
+<div class="page-body">
+  <div class="container">
+    <div class="page-header">
+      <h1>Hola, <span id="greeting-name">Empleado</span></h1>
+      <div class="meta">Registra tu entrada y salida del día</div>
+    </div>
+
+    <div class="grid grid-clock-actions">
+      <div class="card clock-card">
+        <div class="clock-time" id="clock-time">--:--:--</div>
+        <div class="clock-date" id="clock-date">--</div>
+        <div class="status-pill out" id="status-pill">
+          <span class="dot"></span>
+          <span id="status-text">Sin registro hoy</span>
+        </div>
+      </div>
+
+      <div class="card actions-card">
+        <h3>Registrar movimiento</h3>
+        <button class="btn btn-checkin btn-lg btn-full" id="checkin-btn">Registrar entrada</button>
+        <button class="btn btn-checkout btn-lg btn-full" id="checkout-btn">Registrar salida</button>
+      </div>
+    </div>
+
+    <div class="grid stats-row">
+      <div class="stat-card">
+        <div class="label">Entrada de hoy</div>
+        <div class="value" id="stat-checkin">--:--</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Salida de hoy</div>
+        <div class="value" id="stat-checkout">--:--</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Horas trabajadas</div>
+        <div class="value" id="stat-hours">0h 0m</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Registros este mes</div>
+        <div class="value" id="stat-month">0</div>
+      </div>
+    </div>
+
+    <h2 class="section-title">Historial reciente</h2>
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Hora</th>
+            <th>Foto</th>
+            <th>Detalle</th>
+          </tr>
+        </thead>
+        <tbody id="history-body">
+          <tr class="empty-row"><td colspan="5">Aún no tienes registros.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Capture modal: photo + location + device + IP -->
+<div class="modal-overlay" id="capture-modal" hidden>
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="capture-modal-title">Registrar entrada</h3>
+      <button type="button" class="modal-close" id="capture-modal-close" aria-label="Cerrar">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="camera-frame">
+        <video id="camera-video" autoplay playsinline muted></video>
+        <canvas id="camera-canvas" hidden></canvas>
+        <img id="captured-photo" class="captured-photo" hidden alt="Foto capturada">
+        <div class="camera-overlay-msg" id="camera-status">Activando cámara…</div>
+      </div>
+      <div class="capture-actions">
+        <button type="button" class="btn btn-secondary" id="retake-btn" hidden>Repetir foto</button>
+        <button type="button" class="btn btn-checkin" id="capture-btn">Tomar foto</button>
+      </div>
+
+      <div class="meta-list">
+        <div class="meta-row">
+          <span class="meta-label">Ubicación</span>
+          <span class="meta-value-group">
+            <span class="meta-value" id="meta-location">Obteniendo ubicación…</span>
+            <button type="button" class="link-btn" id="retry-location-btn">Reintentar</button>
+          </span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Dispositivo</span>
+          <span class="meta-value" id="meta-device">--</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Dirección IP</span>
+          <span class="meta-value" id="meta-ip">Obteniendo IP…</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" id="capture-cancel-btn">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="capture-confirm-btn" disabled>Confirmar registro</button>
+    </div>
+  </div>
+</div>
+
+<!-- Detail modal: view a past record's metadata -->
+<div class="modal-overlay" id="detail-modal" hidden>
+  <div class="modal-card modal-card-sm">
+    <div class="modal-header">
+      <h3>Detalle del registro</h3>
+      <button type="button" class="modal-close" id="detail-modal-close" aria-label="Cerrar">&times;</button>
+    </div>
+    <div class="modal-body">
+      <img id="detail-photo" class="detail-photo" alt="Foto del registro" hidden>
+      <div class="meta-list">
+        <div class="meta-row"><span class="meta-label">Tipo</span><span class="meta-value" id="detail-type">--</span></div>
+        <div class="meta-row"><span class="meta-label">Fecha y hora</span><span class="meta-value" id="detail-datetime">--</span></div>
+        <div class="meta-row">
+          <span class="meta-label">Ubicación</span>
+          <span class="meta-value" id="detail-location">
+            <button type="button" class="link-btn" id="detail-location-link" hidden>Ver</button>
+            <span id="detail-location-text">--</span>
+          </span>
+        </div>
+        <div class="meta-row"><span class="meta-label">Dispositivo</span><span class="meta-value" id="detail-device">--</span></div>
+        <div class="meta-row"><span class="meta-label">Dirección IP</span><span class="meta-value" id="detail-ip">--</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Map modal: shows the captured location on a map -->
+<div class="modal-overlay" id="map-modal" hidden>
+  <div class="modal-card modal-card-sm">
+    <div class="modal-header">
+      <h3>Ubicación del registro</h3>
+      <button type="button" class="modal-close" id="map-modal-close" aria-label="Cerrar">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="map-frame">
+        <iframe id="map-frame-iframe" title="Mapa de ubicación" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+      <div class="map-coords" id="map-coords">--</div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="app.js"></script>
+<script src="dashboard.js"></script>
+</body>
+</html>
